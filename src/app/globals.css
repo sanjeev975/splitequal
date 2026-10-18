@@ -1,0 +1,16 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+body { @apply bg-ivory text-ink; background-image: radial-gradient(#e7dcc0 1px, transparent 1px); background-size: 18px 18px; }
+:focus-visible { outline: 3px solid #2f5bff; outline-offset: 2px; }
+@layer components {
+  .card { @apply rounded-2xl bg-paper p-5 border border-[#d9ccaa]; box-shadow: 0 1px 0 #fff8 inset, 0 8px 18px -8px #14213d55, 0 2px 4px #14213d22; }
+  .receipt { @apply card font-mono; border-style: dashed; background-image: linear-gradient(#0000 95%, #14213d10 95%); background-size: 100% 28px; }
+  .inset { @apply rounded-xl bg-[#e8dfc6] p-3; box-shadow: inset 0 2px 5px #14213d33, inset 0 -1px 0 #fff9; }
+  .btn { @apply rounded-xl px-4 py-2 font-semibold text-white bg-gradient-to-b from-[#2b3f6e] to-navy disabled:opacity-50;
+    box-shadow: 0 4px 0 #0a1224, 0 8px 14px -4px #14213d88; transition: transform .08s, box-shadow .08s; }
+  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #0a1224; }
+  .btn-coral { @apply from-[#f68d68] to-coral; box-shadow: 0 4px 0 #b24a27, 0 8px 14px -4px #f0734a88; }
+  .field { @apply w-full rounded-xl border border-[#cdbf99] bg-[#fffdf6] px-3 py-2; box-shadow: inset 0 2px 3px #14213d1a; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* Keep content clear of notches / home indicator when launched as an installed app */
+body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
