@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { LegalFooter } from "@/components/LegalPage";
 export default function Landing() {
   return (<main className="mx-auto max-w-4xl px-5 py-10">
     <header className="flex items-center justify-between"><Logo /><Link href="/login" className="btn">Sign in</Link></header>
@@ -9,5 +10,5 @@ export default function Landing() {
         <Link href="/login" className="btn btn-coral mt-6 inline-block">Start a group</Link> <Link href="/guest" className="btn mt-6 ml-3 inline-block">Try without an account</Link></div>
       <div className="receipt rotate-2"><p className="font-bold">GOA TRIP — DINNER</p><p>Total ........ ₹3,000.00</p><p>Asha paid</p><p>Split 3 ways ..... ₹1,000.00</p>
         <p className="mt-2 text-emerald font-bold">Ravi owes Asha ₹1,000.00</p><p className="text-xs mt-2 opacity-60">(illustrative sample)</p></div>
-    </section></main>);
+    </section><LegalFooter /></main>);
 }

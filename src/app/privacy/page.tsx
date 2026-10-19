@@ -1,3 +1,26 @@
-export default function Page() { return <main className="mx-auto max-w-2xl px-5 py-12 space-y-3"><h1 className="font-display text-3xl font-bold">Privacy Policy</h1>
-  <p>Template placeholder. Have this reviewed by a qualified professional before launch and describe your real data handling (accounts, group expenses, receipts, Supabase hosting).</p>
-  <p>Splitequal records who owes whom. It does not process or verify real payments.</p></main>; }
+import { LegalPage, type Section } from "@/components/LegalPage";
+import { LEGAL as L } from "@/lib/legal";
+export const metadata = { title: "Privacy Policy · Splitequal" };
+const sections: Section[] = [
+  ["Who we are", `${L.operator} (“we”, “us”) runs Splitequal, a web app for sharing and tracking expenses with other people. You can reach us at ${L.email}. This policy explains what personal data we handle and why. It is written to meet India’s Digital Personal Data Protection Act, 2023, and similar laws that may apply to you.`],
+  ["What we collect", [
+    "Account: your email address, display name, username and password (stored only as a secure hash by our authentication provider).",
+    "Optional profile details: profile picture, time zone, default currency, and your UPI ID or Venmo username if you choose to add them.",
+    "Group data you or other members enter: group names, members, expenses, amounts, categories, notes, receipts you upload, payments (settlements) and a log of changes.",
+    "Notifications we create for you, and counters that limit abuse (for example how many groups you create per hour).",
+    "Technical data: IP address and basic request logs kept by our hosting and database providers, and error reports if error monitoring is enabled."],
+    "We do not collect payment card or bank details. We do not run advertising or sell your data."],
+  ["How we use it", ["To run the service: calculate balances, show groups to their members, and send in-app notifications and account emails (confirm email, reset password).", "To keep the service safe: prevent abuse, fraud and spam, and fix errors.", "To meet legal obligations and respond to your requests."]],
+  ["Who can see what", ["Everyone in a group can see the group’s expenses, shares, settlements, member names, usernames and profile pictures, and the payment details (UPI/Venmo) of members.", "Anyone holding a valid invite link can join that group until the link expires or is revoked. Group admins decide who gets links.", "Your email address is never shown to other members.", "“Guest” members are names added by someone in the group for a person who has no account. Only add people you are comfortable recording."]],
+  ["Guest mode", "If you use Splitequal without an account, your groups are stored only in your own browser and are not sent to us. If you later create an account, you can copy them into it; the people you typed in become Guest members of that group."],
+  ["Service providers", [`Supabase: database, sign-in and file storage. Data region: ${L.dataRegion}.`, "Vercel: website hosting.", `${L.emailProvider}: sending account emails.`, "Cloudflare Turnstile (bot protection) and Sentry (error monitoring): [keep only if you enable them]."], "They process data only to provide their service to us. We do not give them permission to use it for their own purposes. WhatsApp, UPI apps and Venmo open on your device when you tap a share or pay link; we do not receive information from them."],
+  ["Cookies and device storage", "We use only what is needed to run the app: sign-in session cookies, local storage for guest groups and preferences, and a service worker that stores static files so the app can be installed. We use no advertising or tracking cookies."],
+  ["Payments", "Splitequal records who owes whom. It does not process, hold or verify payments. Pay links open another app, and the person receiving money confirms receipt inside Splitequal."],
+  ["How long we keep data", ["While your account is active.", "When you delete your account we remove your name, username, picture, payment details, notifications and group memberships, and close your login. Expenses you shared with others stay in their groups, shown as “Former member”, because other people’s balances depend on them. Receipts and notes attached to those expenses remain with them.", `Backups held by our database provider may keep older copies for up to ${L.backupDays} days.`]],
+  ["Your rights", ["Access and download: Profile → Your data → Download my data.", "Correct: edit your details in Profile.", "Erase: Profile → Delete my account.", "Withdraw consent, ask a question or make a complaint: write to us (see section 14). We aim to reply within 30 days.", "You may also nominate someone to exercise your rights if you die or cannot, and you may complain to the Data Protection Board of India or your local authority."]],
+  ["Security", "We use encrypted connections, per-user access rules in the database, limits on abusive use, and we keep secret keys on the server only. No system is perfectly secure. If a breach affects you we will tell you and the authorities as the law requires."],
+  ["Children", "Splitequal is not for anyone under 18. If you believe a child has an account, contact us and we will delete it."],
+  ["International processing", "Our providers may process data in other countries. Where required we rely on appropriate safeguards."],
+  ["Contact and grievances", `Questions, requests or complaints: ${L.email}. Grievance Officer: ${L.grievance}. Postal address: ${L.address}. We may update this policy; the date at the top shows the latest version, and we will give notice of significant changes.`],
+];
+export default function Privacy() { return <LegalPage title="Privacy Policy" sections={sections} />; }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { Logo } from "@/components/Logo";
+import { LegalFooter } from "@/components/LegalPage";
 export default function Login() {
   const r = useRouter(); const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState(""); const [password, setPw] = useState(""); const [name, setName] = useState(""); const [username, setUsername] = useState("");
@@ -36,7 +37,8 @@ export default function Login() {
       <input className="field" type="password" placeholder="Password (min 8)" minLength={8} required value={password} onChange={(e) => setPw(e.target.value)} aria-label="Password" />
       {msg && <p role="alert" className="text-danger text-sm">{msg}</p>}
       <button className="btn w-full" disabled={busy}>{busy ? "Please wait…" : mode === "in" ? "Sign in" : "Sign up"}</button>
+      {mode === "up" && <p className="text-xs">By signing up you agree to the <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>}
       <button type="button" className="text-sm underline block" onClick={() => setMode(mode === "in" ? "up" : "in")}>{mode === "in" ? "New here? Create an account" : "Have an account? Sign in"}</button>
       {mode === "in" && <Link href="/forgot" className="text-sm underline block">Forgot password?</Link>}
-    </form></main>);
+    </form><LegalFooter /></main>);
 }
