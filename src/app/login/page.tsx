@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState(""); const [password, setPw] = useState(""); const [name, setName] = useState(""); const [username, setUsername] = useState("");
   const [msg, setMsg] = useState(""); const [busy, setBusy] = useState(false); const [uHint, setUHint] = useState("");
   const sb = supabaseBrowser();
+  useEffect(() => { if (new URLSearchParams(location.search).get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. Please request a new one."); }, []);
   async function checkUser() {
     if (!username) return setUHint("");
     const { data } = await sb.rpc("username_available", { p_username: username });
@@ -18,7 +19,7 @@ export default function Login() {
     e.preventDefault(); setBusy(true); setMsg("");
     if (mode === "up") { const { data: ok } = await sb.rpc("username_available", { p_username: username }); if (!ok) { setBusy(false); return setMsg("That username is taken or invalid."); } }
     const { data, error } = mode === "in" ? await sb.auth.signInWithPassword({ email, password })
-      : await sb.auth.signUp({ email, password, options: { data: { display_name: name, username }, emailRedirectTo: `${location.origin}/dashboard` } });
+      : await sb.auth.signUp({ email, password, options: { data: { display_name: name, username }, emailRedirectTo: `${location.origin}/auth/callback?next=/dashboard` } });
     setBusy(false);
     if (error) return setMsg(/database error/i.test(error.message) ? "That username or email can't be used. Try another." : /already registered/i.test(error.message) ? "An account with this email already exists. Sign in or reset your password." : error.message);
     if (mode === "up" && data.user?.identities?.length === 0) return setMsg("An account with this email already exists. Sign in or reset your password.");

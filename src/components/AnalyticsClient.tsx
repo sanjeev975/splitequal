@@ -16,7 +16,7 @@ export function AnalyticsClient() {
     const { data: { user } } = await sb.auth.getUser(); if (!user) return; setMe(user.id);
     const [g, e, p] = await Promise.all([sb.from("groups").select("id,name"), sb.from("expenses").select("id,group_id,currency,expense_date,category,amount_minor,expense_payments(user_id,amount_minor),expense_splits(user_id,amount_minor)").order("expense_date", { ascending: false }).limit(5000), sb.from("profiles").select("id,display_name,username")]);
     if (e.error) return setErr(e.error.message); setGroups(g.data ?? []); setProfs(p.data ?? []); setRows((e.data ?? []) as unknown as Row[]);
-    const c = [...new Set((e.data ?? []).map((x: any) => x.currency as string))]; setCur(c.includes("INR") ? "INR" : c[0] ?? "INR"); })(); }, [sb]);
+    const c = [...new Set<string>((e.data ?? []).map((x: any) => x.currency as string))]; setCur(c.includes("INR") ? "INR" : c[0] ?? "INR"); })(); }, [sb]);
   const currencies = useMemo(() => [...new Set((rows ?? []).map((r) => r.currency))], [rows]);
   const from = useMemo(() => { const d = new Date(); if (range === "month") d.setDate(1); else if (range === "3m") { d.setMonth(d.getMonth() - 2); d.setDate(1); } else if (range === "year") { d.setMonth(0); d.setDate(1); } else return ""; return d.toISOString().slice(0, 10); }, [range]);
   const ex = useMemo(() => (rows ?? []).filter((r) => r.currency === cur && (!group || r.group_id === group) && (!from || r.expense_date >= from)), [rows, cur, group, from]);
