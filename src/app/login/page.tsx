@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { Logo } from "@/components/Logo";
 import { LegalFooter } from "@/components/LegalPage";
+import { Turnstile, turnstileEnabled } from "@/components/Turnstile";
 export default function Login() {
   const r = useRouter(); const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState(""); const [password, setPw] = useState(""); const [name, setName] = useState(""); const [username, setUsername] = useState("");
   const [msg, setMsg] = useState(""); const [busy, setBusy] = useState(false); const [uHint, setUHint] = useState("");
-  const sb = supabaseBrowser();
+  const sb = supabaseBrowser(); const [captcha, setCaptcha] = useState<string | null>(null); const [resetN, setResetN] = useState(0);
   useEffect(() => { if (new URLSearchParams(location.search).get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. Please request a new one."); }, []);
   async function checkUser() {
     if (!username) return setUHint("");
@@ -17,12 +18,12 @@ export default function Login() {
     setUHint(data ? "✓ Username available" : "✗ Taken or invalid (3–20 letters, numbers, _)");
   }
   async function go(e: React.FormEvent) {
-    e.preventDefault(); setBusy(true); setMsg("");
+    e.preventDefault(); setMsg(""); if (turnstileEnabled && !captcha) return setMsg("Please complete the security check below."); setBusy(true);
     if (mode === "up") { const { data: ok } = await sb.rpc("username_available", { p_username: username }); if (!ok) { setBusy(false); return setMsg("That username is taken or invalid."); } }
-    const { data, error } = mode === "in" ? await sb.auth.signInWithPassword({ email, password })
-      : await sb.auth.signUp({ email, password, options: { data: { display_name: name, username }, emailRedirectTo: `${location.origin}/auth/callback?next=/dashboard` } });
-    setBusy(false);
-    if (error) return setMsg(/database error/i.test(error.message) ? "That username or email can't be used. Try another." : /already registered/i.test(error.message) ? "An account with this email already exists. Sign in or reset your password." : error.message);
+    const { data, error } = mode === "in" ? await sb.auth.signInWithPassword({ email, password, options: { captchaToken: captcha ?? undefined } })
+      : await sb.auth.signUp({ email, password, options: { captchaToken: captcha ?? undefined, data: { display_name: name, username }, emailRedirectTo: `${location.origin}/auth/callback?next=/dashboard` } });
+    setBusy(false); setResetN((n) => n + 1); // tokens are single-use
+    if (error) return setMsg(/captcha/i.test(error.message) ? "Security check failed. Please try again." : /database error/i.test(error.message) ? "That username or email can't be used. Try another." : /already registered/i.test(error.message) ? "An account with this email already exists. Sign in or reset your password." : error.message);
     if (mode === "up" && data.user?.identities?.length === 0) return setMsg("An account with this email already exists. Sign in or reset your password.");
     if (mode === "up" && !data.session) return setMsg("Check your email to verify your account, then sign in.");
     const next = new URLSearchParams(location.search).get("next");
@@ -36,6 +37,7 @@ export default function Login() {
       <input className="field" type="email" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email" />
       <input className="field" type="password" placeholder="Password (min 8)" minLength={8} required value={password} onChange={(e) => setPw(e.target.value)} aria-label="Password" />
       {msg && <p role="alert" className="text-danger text-sm">{msg}</p>}
+      <Turnstile onToken={setCaptcha} resetKey={resetN} />
       <button className="btn w-full" disabled={busy}>{busy ? "Please wait…" : mode === "in" ? "Sign in" : "Sign up"}</button>
       {mode === "up" && <p className="text-xs">By signing up you agree to the <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>}
       <button type="button" className="text-sm underline block" onClick={() => setMode(mode === "in" ? "up" : "in")}>{mode === "in" ? "New here? Create an account" : "Have an account? Sign in"}</button>

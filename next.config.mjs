@@ -1,11 +1,13 @@
 // Security headers. CSP is locked to this site + your Supabase project. Set CSP_REPORT_ONLY=1 to log violations instead of blocking while you test.
 const dev = process.env.NODE_ENV !== "production";
+const ts = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? " https://challenges.cloudflare.com" : ""; // Turnstile (bot check) script + iframe
 const sentry = process.env.SENTRY_INGEST_HOST ? ` https://${process.env.SENTRY_INGEST_HOST}` : ""; // optional error-tracker endpoint
 const supa = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host : "*.supabase.co";
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}`, // Next.js emits inline bootstrap scripts; a nonce-based strict CSP is a later hardening step
+  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}${ts}`, // Next.js emits inline bootstrap scripts; a nonce-based strict CSP is a later hardening step
   "style-src 'self' 'unsafe-inline'",
+  `frame-src 'self'${ts}`,
   `img-src 'self' data: blob: https://${supa}`,
   "font-src 'self' data:",
   `connect-src 'self' https://${supa} wss://${supa}${sentry}${dev ? " ws://localhost:* http://localhost:*" : ""}`,

@@ -2,12 +2,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { Turnstile, turnstileEnabled } from "@/components/Turnstile";
 export function AccountData() {
-  const r = useRouter(); const [pw, setPw] = useState(""); const [word, setWord] = useState(""); const [busy, setBusy] = useState(false); const [err, setErr] = useState(""); const [blockers, setBlockers] = useState<string[]>([]);
+  const r = useRouter(); const [pw, setPw] = useState(""); const [word, setWord] = useState(""); const [busy, setBusy] = useState(false); const [err, setErr] = useState(""); const [blockers, setBlockers] = useState<string[]>([]); const [captcha, setCaptcha] = useState<string | null>(null); const [resetN, setResetN] = useState(0);
   async function del(e: React.FormEvent) {
     e.preventDefault(); setErr(""); setBlockers([]); setBusy(true);
-    const res = await fetch("/api/account/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw, confirm: word }) });
-    const j = await res.json().catch(() => ({})); setBusy(false);
+    const res = await fetch("/api/account/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw, confirm: word, captchaToken: captcha }) });
+    const j = await res.json().catch(() => ({})); setBusy(false); setResetN((n) => n + 1);
     if (res.status === 409 && j.blockers) return setBlockers(j.blockers);
     if (!res.ok) return setErr(j.error ?? "Something went wrong.");
     await supabaseBrowser().auth.signOut(); r.push("/"); r.refresh();
@@ -21,5 +22,6 @@ export function AccountData() {
         <input className="field" required placeholder="Type DELETE to confirm" value={word} onChange={(e) => setWord(e.target.value)} aria-label="Type DELETE to confirm" />
         {!!blockers.length && <div role="alert" className="text-danger text-sm"><p className="font-semibold">Before you can delete your account:</p><ul className="list-disc pl-5">{blockers.map((b) => <li key={b}>{b}</li>)}</ul></div>}
         {err && <p role="alert" className="text-danger text-sm">{err}</p>}
-        <button className="btn btn-coral" disabled={busy || word !== "DELETE" || !pw}>{busy ? "Deleting…" : "Permanently delete my account"}</button></form></details></section>);
+        <Turnstile onToken={setCaptcha} resetKey={resetN} />
+        <button className="btn btn-coral" disabled={busy || word !== "DELETE" || !pw || (turnstileEnabled && !captcha)}>{busy ? "Deleting…" : "Permanently delete my account"}</button></form></details></section>);
 }
