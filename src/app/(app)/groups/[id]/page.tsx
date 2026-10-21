@@ -39,7 +39,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
   return (<div className="space-y-6"><LiveRefresh groupId={id} />
     <header><h1 className="font-display text-3xl font-bold">{g.name}</h1><p className="opacity-70">{g.type} · base {g.base_currency} · {members.map((m) => m.name).join(", ")}</p></header>
     <GroupAdmin groupId={id} name={g.name} archived={!!g.archived_at} me={user.id} isAdmin={isAdmin} isOwner={isOwner} roster={roster} invites={(inv ?? []) as any} />
-    <AddExpense groupId={id} currency={g.base_currency} members={members} me={user.id} />
+    <div id="add-expense" className="scroll-mt-20"><AddExpense groupId={id} currency={g.base_currency} members={members} me={user.id} /></div>
     <section className="card space-y-3"><h2 className="font-display text-xl font-bold">Balances</h2>
       {panels.map((p) => (<div key={p.cur} className="inset space-y-1"><p className="font-bold">{p.cur}</p>
         {Object.entries(p.net).filter(([, v]) => v !== 0).map(([u, v]) => <p key={u} className={v >= 0 ? "text-emerald" : "text-coral"}>{name(u)}: {v >= 0 ? "is owed" : "owes"} {fmt(Math.abs(v), p.cur)}</p>)}

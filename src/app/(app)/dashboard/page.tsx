@@ -33,7 +33,7 @@ export default async function Dashboard() {
   const mrows = Object.entries(month).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6); const mmax = Math.max(1, ...mrows.map((r) => r[1]));
   if (!groups?.length) return <div className="card space-y-3"><h1 className="font-display text-3xl font-bold">Welcome to Splitequal</h1><p>No groups yet — create one to start sharing expenses.</p><Link className="btn btn-coral inline-block" href="/groups">Create a group</Link></div>;
   return (<div className="space-y-6">
-    <div className="flex items-center justify-between"><h1 className="font-display text-3xl font-bold">Dashboard</h1><Link className="btn btn-coral" href="/groups">+ Quick add expense</Link></div>
+    <div className="flex items-center justify-between"><h1 className="font-display text-3xl font-bold">Dashboard</h1><Link className="btn btn-coral" href="/add">+ Quick add expense</Link></div>
     {Object.keys(tot).length === 0 && <p className="card">No expenses yet. Open a group and add one.</p>}
     {Object.entries(tot).map(([cur, t]) => (<section key={cur} className="grid gap-3 sm:grid-cols-3" aria-label={`${cur} summary`}>
       <div className="inset"><p className="text-sm">You owe ({cur})</p><p className="font-mono text-2xl text-coral">{fmt(t.owe, cur)}</p></div>

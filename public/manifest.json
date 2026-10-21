@@ -38,7 +38,7 @@
     {
       "name": "Add expense",
       "short_name": "Add",
-      "url": "/groups",
+      "url": "/add",
       "icons": [
         {
           "src": "/icons/icon-192.png",

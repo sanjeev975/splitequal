@@ -4,7 +4,7 @@ import { safeNext } from "@/lib/safeNext";
 type CookieToSet = { name: string; value: string; options?: any }; // explicit: see src/lib/supabase/server.ts
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const needsAuth = ["/groups", "/dashboard", "/profile", "/notifications", "/analytics"].some((p) => path.startsWith(p));
+  const needsAuth = ["/groups", "/dashboard", "/profile", "/notifications", "/analytics", "/add"].some((p) => path.startsWith(p));
   const guestOnly = path === "/login" || path === "/forgot"; // pointless once you're signed in
   if (!needsAuth && !guestOnly) return NextResponse.next(); // landing, join, guest, legal pages...: no auth call at all
   let res = NextResponse.next({ request: req });
