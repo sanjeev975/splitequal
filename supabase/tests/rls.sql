@@ -1,7 +1,7 @@
 -- Run in the Supabase SQL editor. Creates two throwaway users, asserts isolation, then ROLLS BACK. Look for "RLS tests passed".
 begin;
 do $$
-declare a uuid := gen_random_uuid(); b uuid := gen_random_uuid(); g uuid; t text; n int; c uuid := gen_random_uuid(); s1 uuid; s2 uuid; sh uuid; g2 uuid; pl jsonb;
+declare a uuid := gen_random_uuid(); b uuid := gen_random_uuid(); g uuid; t text; n int; c uuid := gen_random_uuid(); s1 uuid; s2 uuid; sh uuid; g2 uuid; pl jsonb; g3 uuid; t3 text; s3 uuid; nl text; nb text;
 begin
   insert into auth.users (id, email, email_confirmed_at) values (a, 'rls-a@test.invalid', now()), (b, 'rls-b@test.invalid', now());
   perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
@@ -52,6 +52,21 @@ begin
     'expenses', jsonb_build_array(jsonb_build_object('title', 'T', 'amount_minor', 100, 'date', '2026-10-01', 'paid_by', jsonb_build_array(jsonb_build_object('member', 'm1', 'amount', 100)), 'splits', jsonb_build_array(jsonb_build_object('member', 'm1', 'amount', 50), jsonb_build_object('member', 'm2', 'amount', 50)))));
   g2 := import_guest_group(pl, 'key1'); assert import_guest_group(pl, 'key1') = g2, 'import is idempotent';
   select count(*) into n from group_members gm join profiles p on p.id = gm.user_id where gm.group_id = g2 and p.is_shadow; assert n = 1, 'one shadow imported';
+  -- reversal after the payer has LEFT the group
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true); set local role authenticated;
+  g3 := create_group('G3', 'Custom', 'INR'); t3 := create_invite_link(g3);
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true); perform accept_invite(t3);
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+  perform create_expense(g3, 'E', 200, 'INR', current_date, 'Other', 'equal', null, jsonb_build_array(jsonb_build_object('user_id', a, 'amount', 200)), jsonb_build_array(jsonb_build_object('user_id', a, 'amount', 100), jsonb_build_object('user_id', b, 'amount', 100)));
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true); s3 := record_settlement(g3, a, 100, 'INR', null, 'k3');
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true); perform confirm_settlement(s3);
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true); perform remove_member(g3, b); -- balance is zero, so leaving is allowed
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true); perform reverse_settlement(s3, 'not received');
+  reset role;
+  select link, body into nl, nb from notifications where user_id = b and group_id = g3 and type = 'settlement_reversed';
+  assert nb is not null, 'the person who left is still notified';
+  assert nl is null, 'no dead link to a group they cannot open';
+  assert nb like '%INR 1.00%' and nb like '%not received%', 'message carries the amount and the reason: ' || nb; -- 100 paise = INR 1.00
   -- account deletion (service-role functions: run as postgres)
   reset role;
   assert array_length(account_blockers(a), 1) >= 1, 'owner of a group with other members is blocked';
