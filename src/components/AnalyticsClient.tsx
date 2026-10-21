@@ -5,10 +5,11 @@ import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveCo
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { byCategory, byMember, byMonth, topN, totals, type Ex } from "@/lib/analytics";
 import { fmt } from "@/lib/format";
-const COLORS = ["#14213d", "#f0734a", "#0f9d6b", "#2f5bff", "#b8a9f0", "#f2b84b", "#e58ac3", "#8a8f98"];
+import { useChartColors } from "@/lib/useChartColors";
 const compact = (minor: number) => (minor / 100).toLocaleString("en-IN", { notation: "compact", maximumFractionDigits: 1 });
 type Row = Ex & { id: string };
 export function AnalyticsClient() {
+  const colors = useChartColors();
   const sb = supabaseBrowser(); const [me, setMe] = useState(""); const [rows, setRows] = useState<Row[] | null>(null); const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
   const [profs, setProfs] = useState<{ id: string; display_name: string; username: string | null }[]>([]);
   const [group, setGroup] = useState(""); const [cur, setCur] = useState(""); const [range, setRange] = useState("3m"); const [mode, setMode] = useState<"total" | "mine">("total"); const [err, setErr] = useState("");
@@ -23,9 +24,9 @@ export function AnalyticsClient() {
   const name = (id: string) => { const p = profs.find((x) => x.id === id); if (!p) return "Former member"; return profs.some((o) => o.id !== id && o.display_name.toLowerCase() === p.display_name.toLowerCase()) ? `${p.display_name} (@${p.username})` : p.display_name; };
   const cats = useMemo(() => topN(byCategory(ex, mode, me)), [ex, mode, me]); const members = useMemo(() => Object.entries(byMember(ex)).map(([id, v]) => ({ name: name(id), Paid: v.paid, Owed: v.owed })), [ex, profs]); // eslint-disable-line react-hooks/exhaustive-deps
   const months = useMemo(() => byMonth(ex, me).map((m) => ({ month: m.month, "Total spent": m.total, "My share": m.mine })), [ex, me]); const t = totals(ex, me); const catTotal = cats.reduce((a, c) => a + c.value, 0);
-  const tip = { formatter: (v: any) => fmt(Number(v), cur), contentStyle: { borderRadius: 12, border: "1px solid #d9ccaa", background: "#fbf6ea" } };
+  const tip = { formatter: (v: any) => fmt(Number(v), cur), contentStyle: { borderRadius: 12, border: "1px solid rgb(var(--border))", background: "rgb(var(--card))", color: "rgb(var(--fg))" } };
   if (err) return <p role="alert" className="card text-danger">{err}</p>;
-  if (rows === null) return <p className="card">Loading analytics…</p>;
+  if (rows === null || !colors) return <p className="card">Loading analytics…</p>;
   if (!rows.length) return <div className="card space-y-2"><h1 className="font-display text-3xl font-bold">Analytics</h1><p>No expenses yet — add some in a group and your charts will appear here.</p><Link className="btn inline-block" href="/groups">Go to groups</Link></div>;
   return (<div className="space-y-5"><h1 className="font-display text-3xl font-bold">Analytics</h1>
     <div className="card grid gap-2 sm:grid-cols-4">
@@ -37,10 +38,10 @@ export function AnalyticsClient() {
     <div className="grid gap-3 sm:grid-cols-4">{[["Total spent", fmt(t.spent, cur)], ["My share", fmt(t.share, cur)], ["I paid", fmt(t.paid, cur)], ["Expenses", String(t.count)]].map(([l, v]) => <div key={l} className="inset"><p className="text-sm">{l}</p><p className="font-mono text-xl">{v}</p></div>)}</div>
     {!ex.length ? <p className="card">No {cur} expenses in this period.</p> : <>
       <section className="card"><h2 className="font-display text-xl font-bold">Spending by category <span className="text-sm font-normal">({mode === "total" ? "total spent" : "my share"})</span></h2>
-        <div className="h-72" role="img" aria-label="Donut chart of spending by category; the same data is in the table below"><ResponsiveContainer><PieChart><Pie data={cats} dataKey="value" nameKey="name" innerRadius={62} outerRadius={105} paddingAngle={2} stroke="#fbf6ea" strokeWidth={3}>{cats.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}</Pie><Tooltip {...tip} /><Legend /></PieChart></ResponsiveContainer></div>
+        <div className="h-72" role="img" aria-label="Donut chart of spending by category; the same data is in the table below"><ResponsiveContainer><PieChart><Pie data={cats} dataKey="value" nameKey="name" innerRadius={62} outerRadius={105} paddingAngle={2} stroke={colors.card} strokeWidth={3}>{cats.map((_, i) => <Cell key={i} fill={colors.series[i % colors.series.length]} />)}</Pie><Tooltip {...tip} /><Legend wrapperStyle={{ color: colors.text }} /></PieChart></ResponsiveContainer></div>
         <details className="text-sm"><summary className="cursor-pointer">View as table</summary><table className="w-full mt-2"><tbody>{cats.map((c) => <tr key={c.name}><td>{c.name}</td><td className="text-right font-mono">{fmt(c.value, cur)}</td><td className="text-right">{Math.round((c.value / catTotal) * 100)}%</td></tr>)}</tbody></table></details></section>
       <section className="card"><h2 className="font-display text-xl font-bold">Who paid vs who owes</h2><p className="text-xs">Paid = money each person actually put in. Owed = their share of the costs.</p>
-        <div className="h-72"><ResponsiveContainer><BarChart data={members}><CartesianGrid strokeDasharray="3 3" stroke="#d9ccaa" /><XAxis dataKey="name" /><YAxis tickFormatter={compact} width={48} /><Tooltip {...tip} /><Legend /><Bar dataKey="Paid" fill="#14213d" radius={[8, 8, 0, 0]} /><Bar dataKey="Owed" fill="#f0734a" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div></section>
+        <div className="h-72"><ResponsiveContainer><BarChart data={members}><CartesianGrid strokeDasharray="3 3" stroke={colors.grid} /><XAxis dataKey="name" tick={{ fill: colors.muted, fontSize: 12 }} stroke={colors.grid} /><YAxis tickFormatter={compact} width={48} tick={{ fill: colors.muted, fontSize: 12 }} stroke={colors.grid} /><Tooltip {...tip} /><Legend wrapperStyle={{ color: colors.text }} /><Bar dataKey="Paid" fill={colors.primary} radius={[8, 8, 0, 0]} /><Bar dataKey="Owed" fill={colors.accent} radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div></section>
       <section className="card"><h2 className="font-display text-xl font-bold">Monthly spending</h2>
-        <div className="h-72"><ResponsiveContainer><BarChart data={months}><CartesianGrid strokeDasharray="3 3" stroke="#d9ccaa" /><XAxis dataKey="month" /><YAxis tickFormatter={compact} width={48} /><Tooltip {...tip} /><Legend /><Bar dataKey="Total spent" fill="#2f5bff" radius={[8, 8, 0, 0]} /><Bar dataKey="My share" fill="#0f9d6b" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div></section></>}</div>);
+        <div className="h-72"><ResponsiveContainer><BarChart data={months}><CartesianGrid strokeDasharray="3 3" stroke={colors.grid} /><XAxis dataKey="month" tick={{ fill: colors.muted, fontSize: 12 }} stroke={colors.grid} /><YAxis tickFormatter={compact} width={48} tick={{ fill: colors.muted, fontSize: 12 }} stroke={colors.grid} /><Tooltip {...tip} /><Legend wrapperStyle={{ color: colors.text }} /><Bar dataKey="Total spent" fill={colors.primary} radius={[8, 8, 0, 0]} /><Bar dataKey="My share" fill={colors.good} radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div></section></>}</div>);
 }

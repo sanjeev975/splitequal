@@ -4,6 +4,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { PaymentHandles } from "@/components/PaymentHandles";
 import { AvatarPicker } from "@/components/AvatarPicker";
 import { SignOut } from "@/components/SignOut";
+import { ThemeSetting } from "@/components/ThemeSetting";
 import { AccountData } from "@/components/AccountData";
 const CUR = ["INR", "USD", "GBP", "EUR", "AED", "CAD", "AUD"];
 export default function Profile() {
@@ -16,7 +17,7 @@ export default function Profile() {
     setMsg(error ? (error.code === "23505" ? "That username is taken." : error.code === "23514" ? "Username must be 3–20 letters, numbers or _." : error.message) : "Saved.");
   }
   const zones = (Intl as any).supportedValuesOf?.("timeZone") as string[] | undefined ?? ["Asia/Kolkata", "UTC"];
-  return (<div className="space-y-6"><AvatarPicker /><form onSubmit={save} className="card space-y-3 max-w-md"><h1 className="font-display text-2xl font-bold">Profile & settings</h1>
+  return (<div className="space-y-6"><AvatarPicker /><ThemeSetting /><form onSubmit={save} className="card space-y-3 max-w-md"><h1 className="font-display text-2xl font-bold">Profile & settings</h1>
     <label className="block text-sm">Email<input className="field" readOnly value={email} aria-readonly="true" /></label><p className="text-xs -mt-2">The email you sign in with. It isn't shown to other members.</p>
     <label className="block text-sm">Display name<input className="field" required value={f.display_name} onChange={(e) => setF({ ...f, display_name: e.target.value })} /></label>
     <label className="block text-sm">Username<input className="field" required value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></label>

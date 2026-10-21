@@ -1,6 +1,6 @@
 # Pure-Python (no dependencies) icon generator from the Splitequal logo. Run: python3 scripts/generate-icons.py
 import struct, zlib
-NAVY = (20, 33, 61); CORAL = (240, 115, 74); LAV = (184, 169, 240); IVORY = (251, 246, 234)
+NAVY = (44, 114, 228); CORAL = (255, 255, 255); LAV = (207, 227, 255); IVORY = (255, 255, 255)  # brand blue square, white bars
 def rr(px, py, x, y, w, h, r):
     if px < x or px > x + w or py < y or py > y + h: return False
     cx = min(max(px, x + r), x + w - r); cy = min(max(py, y + r), y + h - r)
@@ -9,7 +9,7 @@ def color(u, v, opaque):
     if not opaque and not rr(u, v, 0, 0, 32, 32, 9): return (0, 0, 0, 0)
     if rr(u, v, 6, 9, 20, 5, 2.5): return CORAL + (255,)
     if rr(u, v, 6, 18, 20, 5, 2.5): return LAV + (255,)
-    if 6 <= u <= 26 and 14 <= v <= 15.6: return IVORY + (255,)
+    if 6 <= u <= 26 and 15.2 <= v <= 16.8: return IVORY + (255,)
     return NAVY + (255,)
 def make(path, size, scale, opaque):
     rows = []

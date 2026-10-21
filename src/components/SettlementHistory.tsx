@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { fmt } from "@/lib/format";
-const BADGE: Record<string, string> = { pending: "bg-lav", confirmed: "bg-emerald text-white", rejected: "bg-danger text-white", cancelled: "bg-[#cdbf99]", reversed: "bg-coral text-white" };
+const BADGE: Record<string, string> = { pending: "bg-soft text-soft-fg", confirmed: "bg-good text-on", rejected: "bg-danger text-on", cancelled: "bg-inset text-muted", reversed: "bg-accent text-on" };
 export function SettlementHistory({ settlements, members, me, isAdmin }: { settlements: any[]; members: { user_id: string; name: string }[]; me: string; isAdmin: boolean }) {
   const r = useRouter(); const sb = supabaseBrowser(); const [err, setErr] = useState("");
   const nm = (id: string) => members.find((m) => m.user_id === id)?.name ?? "Former member";

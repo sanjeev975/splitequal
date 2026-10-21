@@ -17,5 +17,5 @@ export function NotificationBell() {
     return () => { cancelled = true; if (ch) sb.removeChannel(ch); };
   }, []);
   return (<Link href="/notifications" className="relative" aria-label={`Notifications, ${n} unread`}><Bell size={22} />
-    {n > 0 && <span className="absolute -top-2 -right-3 rounded-full bg-coral text-white text-xs px-1.5">{n > 9 ? "9+" : n}</span>}</Link>);
+    {n > 0 && <span className="absolute -top-2 -right-3 rounded-full bg-coral text-on text-xs px-1.5">{n > 9 ? "9+" : n}</span>}</Link>);
 }

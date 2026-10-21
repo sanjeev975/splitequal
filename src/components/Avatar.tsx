@@ -17,5 +17,5 @@ export function Avatar({ path, name, size = 36 }: { path?: string | null; name: 
   if (preset) return <span aria-hidden className="inline-grid shrink-0 place-items-center rounded-full" style={{ ...box, background: preset.bg }}>{preset.e}</span>;
   // eslint-disable-next-line @next/next/no-img-element
   if (url) return <img src={url} alt="" width={size} height={size} className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />;
-  return <span aria-hidden className="inline-grid shrink-0 place-items-center rounded-full bg-navy font-bold text-ivory" style={{ ...box, fontSize: size * 0.42 }}>{(name.trim()[0] ?? "?").toUpperCase()}</span>;
+  return <span aria-hidden className="inline-grid shrink-0 place-items-center rounded-full bg-navy font-bold text-on" style={{ ...box, fontSize: size * 0.42 }}>{(name.trim()[0] ?? "?").toUpperCase()}</span>;
 }

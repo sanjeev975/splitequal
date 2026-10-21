@@ -1,16 +1,37 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-body { @apply bg-ivory text-ink; background-image: radial-gradient(#e7dcc0 1px, transparent 1px); background-size: 18px 18px; }
-:focus-visible { outline: 3px solid #2f5bff; outline-offset: 2px; }
+/* DESIGN TOKENS: "Azure Flow" (21st.dev) tuned for WCAG AA contrast. Space-separated RGB so Tailwind opacity (bg-card/80) works. Change colors HERE only; tests/contrast.test.ts guards them. */
+:root {
+  --bg: 246 248 251; --card: 255 255 255; --fg: 31 41 55; --muted: 91 101 119;
+  --primary: 44 114 228; --on: 255 255 255; --accent: 194 65 12; --good: 21 128 61; --danger: 185 28 28;
+  --border: 228 231 236; --inset: 238 242 247; --soft: 223 242 255; --soft-fg: 8 48 160; --ring: 50 128 255;
+  --chart-4: 124 58 237; --chart-5: 180 83 9; --chart-6: 190 24 93; --chart-7: 15 118 110; --chart-8: 91 101 119;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: 23 23 23; --card: 38 38 38; --fg: 229 229 229; --muted: 163 163 163;
+  --primary: 91 164 255; --on: 11 18 32; --accent: 251 146 60; --good: 74 222 128; --danger: 248 113 113;
+  --border: 64 64 64; --inset: 31 31 31; --soft: 30 58 100; --soft-fg: 190 219 255; --ring: 91 164 255;
+  --chart-4: 167 139 250; --chart-5: 251 191 36; --chart-6: 244 114 182; --chart-7: 45 212 191; --chart-8: 163 163 163;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: 23 23 23; --card: 38 38 38; --fg: 229 229 229; --muted: 163 163 163;
+    --primary: 91 164 255; --on: 11 18 32; --accent: 251 146 60; --good: 74 222 128; --danger: 248 113 113;
+    --border: 64 64 64; --inset: 31 31 31; --soft: 30 58 100; --soft-fg: 190 219 255; --ring: 91 164 255;
+    --chart-4: 167 139 250; --chart-5: 251 191 36; --chart-6: 244 114 182; --chart-7: 45 212 191; --chart-8: 163 163 163;
+    color-scheme: dark;
+  }
+}
+body { @apply bg-bg text-fg antialiased; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+:focus-visible { outline: 3px solid rgb(var(--ring)); outline-offset: 2px; }
+::selection { background: rgb(var(--primary) / 0.25); }
 @layer components {
-  .card { @apply rounded-2xl bg-paper p-5 border border-[#d9ccaa]; box-shadow: 0 1px 0 #fff8 inset, 0 8px 18px -8px #14213d55, 0 2px 4px #14213d22; }
-  .receipt { @apply card font-mono; border-style: dashed; background-image: linear-gradient(#0000 95%, #14213d10 95%); background-size: 100% 28px; }
-  .inset { @apply rounded-xl bg-[#e8dfc6] p-3; box-shadow: inset 0 2px 5px #14213d33, inset 0 -1px 0 #fff9; }
-  .btn { @apply rounded-xl px-4 py-2 font-semibold text-white bg-gradient-to-b from-[#2b3f6e] to-navy disabled:opacity-50;
-    box-shadow: 0 4px 0 #0a1224, 0 8px 14px -4px #14213d88; transition: transform .08s, box-shadow .08s; }
-  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #0a1224; }
-  .btn-coral { @apply from-[#f68d68] to-coral; box-shadow: 0 4px 0 #b24a27, 0 8px 14px -4px #f0734a88; }
-  .field { @apply w-full rounded-xl border border-[#cdbf99] bg-[#fffdf6] px-3 py-2; box-shadow: inset 0 2px 3px #14213d1a; }
+  .card { @apply rounded-2xl border border-border bg-card p-5 shadow-sm; }
+  .receipt { @apply card font-mono border-dashed; }
+  .inset { @apply rounded-xl border border-border bg-inset p-3; }
+  .btn { @apply inline-block rounded-full bg-primary px-4 py-2 text-center font-semibold text-on transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-coral { @apply bg-accent; }
+  .field { @apply w-full rounded-xl border border-border bg-card px-3 py-2 text-fg placeholder:text-muted; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
-/* Keep content clear of notches / home indicator when launched as an installed app */
-body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }

@@ -42,7 +42,7 @@ export default async function Dashboard() {
     <section className="card"><h2 className="font-display text-xl font-bold">Active groups</h2><ul className="mt-2 flex flex-wrap gap-2">{groups.map((g) => <li key={g.id}><Link className="underline" href={`/groups/${g.id}`}>{g.name}</Link></li>)}</ul></section>
     <section className="card"><h2 className="font-display text-xl font-bold">My monthly share</h2>{mrows.length === 0 && <p>No shares yet.</p>}
       {mrows.map(([k, v]) => <div key={k} className="mt-2 text-sm"><div className="flex justify-between"><span>{k}</span><span className="font-mono">{fmt(v, k.slice(0, 3))}</span></div>
-        <div className="h-3 rounded-full bg-[#e8dfc6] overflow-hidden" style={{ boxShadow: "inset 0 1px 3px #14213d44" }}><div className="h-full bg-volt" style={{ width: `${(v / mmax) * 100}%` }} /></div></div>)}</section>
+        <div className="h-3 overflow-hidden rounded-full bg-inset"><div className="h-full bg-primary" style={{ width: `${(v / mmax) * 100}%` }} /></div></div>)}</section>
     <section className="space-y-2"><h2 className="font-display text-xl font-bold">Recent expenses</h2>{(ex ?? []).slice(0, 5).map((e: any) => (
       <Link key={e.id} href={`/groups/${e.group_id}`} className="receipt block"><div className="flex justify-between font-bold"><span>{e.title}</span><span>{fmt(Number(e.amount_minor), e.currency)}</span></div><p className="text-sm">{gname(e.group_id)} · {e.expense_date}</p></Link>))}</section>
     <section className="card"><h2 className="font-display text-xl font-bold">Recent settlements</h2>{!st?.length && <p>None yet.</p>}
