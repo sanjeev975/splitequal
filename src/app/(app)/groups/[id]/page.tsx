@@ -9,8 +9,10 @@ import { ExpenseList } from "@/components/ExpenseList";
 import { ExpenseActions } from "@/components/ExpenseTools";
 import { LiveRefresh } from "@/components/LiveRefresh";
 export default async function GroupPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params; const sb = await supabaseServer();
-  const [{ data: { user } }, { data: g }, { data: mem }, { data: ex }, { data: st }, { data: act }, { data: inv }] = await Promise.all([
+  const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound(); // not even a valid id
+  const sb = await supabaseServer();
+  const [{ data: { user } }, { data: g, error: gErr }, { data: mem }, { data: ex }, { data: st }, { data: act }, { data: inv }] = await Promise.all([
     sb.auth.getUser(),
     sb.from("groups").select("*").eq("id", id).maybeSingle(),
     sb.from("group_members").select("user_id,role,profiles(display_name,username,avatar_path,is_shadow)").eq("group_id", id),
@@ -19,7 +21,9 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
     sb.from("activity_logs").select("*").eq("group_id", id).order("created_at", { ascending: false }).limit(10),
     sb.from("group_invitations").select("id,expires_at,use_count").eq("group_id", id).is("revoked_at", null).gt("expires_at", new Date().toISOString()),
   ]);
-  if (!user) redirect("/login"); if (!g) notFound();
+  if (!user) redirect(`/login?next=${encodeURIComponent(`/groups/${id}`)}`);
+  if (gErr) throw new Error("Couldn't load this group"); // a real failure shows "try again", not a misleading "not found"
+  if (!g) notFound(); // no access (left / removed / deleted): friendly page in groups/[id]/not-found.tsx
   // Legacy duplicates (same display name in one group) are shown with @username so people can tell them apart.
   const raw = (mem ?? []).map((m: any) => ({ user_id: m.user_id as string, dn: (m.profiles?.display_name as string) || "Member", un: (m.profiles?.username as string) || "" }));
   const members = raw.map((m) => ({ user_id: m.user_id, name: raw.some((o) => o.user_id !== m.user_id && o.dn.trim().toLowerCase() === m.dn.trim().toLowerCase()) ? `${m.dn} (@${m.un})` : m.dn }));

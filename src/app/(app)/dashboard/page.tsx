@@ -13,7 +13,7 @@ export default async function Dashboard() {
     sb.from("settlements").select("id,group_id,from_user,to_user,amount_minor,currency,status").order("created_at", { ascending: false }),
     sb.from("profiles").select("id,display_name"),
   ]);
-  if (!user) redirect("/login");
+  if (!user) redirect("/login?next=%2Fdashboard");
   const gname = (id: string) => groups?.find((g) => g.id === id)?.name ?? "Group";
   const pname = (id: string) => profs?.find((p) => p.id === id)?.display_name ?? "Someone";
   // Per (group, currency) net, then sum my positive/negative positions per currency. Currencies are never mixed.

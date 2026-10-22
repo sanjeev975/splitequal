@@ -15,7 +15,7 @@ export default function Login() {
   const [sent, setSent] = useState<{ email: string; kind: "new" | "unconfirmed" } | null>(null); const [cooldown, setCooldown] = useState(0); const [resendBusy, setResendBusy] = useState(false);
   const next = () => safeNext(new URLSearchParams(location.search).get("next"));
   const callback = () => `${location.origin}/auth/callback?next=${encodeURIComponent(next())}`; // keeps invite links working through the email
-  useEffect(() => { if (new URLSearchParams(location.search).get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. If you were confirming your email, try signing in. Otherwise request a new link."); }, []);
+  useEffect(() => { const sp = new URLSearchParams(location.search); if (sp.get("mode") === "up") setMode("up"); if (sp.get("next")) setNote("Please sign in or create an account to continue where you left off."); if (sp.get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. If you were confirming your email, try signing in. Otherwise request a new link."); }, []);
   useEffect(() => { if (cooldown <= 0) return; const t = setTimeout(() => setCooldown((c) => c - 1), 1000); return () => clearTimeout(t); }, [cooldown]);
   async function checkUser() {
     if (!username) return setUHint("");
@@ -60,6 +60,7 @@ export default function Login() {
         <input className="field" placeholder="Username" required value={username} onChange={(e) => setUsername(e.target.value)} onBlur={checkUser} aria-label="Username" />{uHint && <p className="text-sm" role="status">{uHint}</p>}</>}
       <input className="field" type="email" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email" />
       <input className="field" type="password" placeholder="Password (min 8)" minLength={8} required value={password} onChange={(e) => setPw(e.target.value)} aria-label="Password" />
+      {note && <p className="text-sm text-muted">{note}</p>}
       {msg && <p role="alert" className="text-danger text-sm">{msg}</p>}
       <Turnstile onToken={setCaptcha} resetKey={resetN} />
       <button className="btn w-full" disabled={busy}>{busy ? "Please wait…" : mode === "in" ? "Sign in" : "Sign up"}</button>

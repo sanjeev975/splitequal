@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 const dec = (n: number | string) => `${Math.floor(Number(n) / 100)}.${String(Number(n) % 100).padStart(2, "0")}`;
-export async function GET() {
+export async function GET(req: Request) {
+  if (req.headers.get("sec-fetch-site") === "cross-site") return NextResponse.json({ error: "Forbidden" }, { status: 403 }); // another website can't trigger a download of your data
   const sb = await supabaseServer(); const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   // Everything below goes through the user's own session, so row-level security limits it to what they're allowed to see.
