@@ -13,7 +13,7 @@ export function AccountData() {
     if (!res.ok) return setErr(j.error ?? "Something went wrong.");
     await supabaseBrowser().auth.signOut(); r.push("/"); r.refresh();
   }
-  return (<section className="card max-w-md space-y-3"><h2 className="font-display text-xl font-bold">Your data</h2>
+  return (<section className="card max-w-md space-y-3"><h2 className="h-card">Your data</h2>
     <p className="text-sm">Download a copy of your account, groups, expenses you took part in, settlements and notifications.</p>
     <a className="btn inline-block" href="/api/account/export" download>Download my data</a>
     <details className="inset"><summary className="cursor-pointer font-semibold text-danger">Delete my account</summary>

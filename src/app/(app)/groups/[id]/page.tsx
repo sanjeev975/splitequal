@@ -40,19 +40,19 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
     return { cur, net, transfers: simplify(net) };
   });
   const pending = (st ?? []).filter((s: any) => s.status === "pending");
-  return (<div className="space-y-6"><LiveRefresh groupId={id} />
-    <header><h1 className="font-display text-3xl font-bold">{g.name}</h1><p className="opacity-70">{g.type} · base {g.base_currency} · {members.map((m) => m.name).join(", ")}</p></header>
-    <GroupAdmin groupId={id} name={g.name} archived={!!g.archived_at} me={user.id} isAdmin={isAdmin} isOwner={isOwner} roster={roster} invites={(inv ?? []) as any} />
-    <div id="add-expense" className="scroll-mt-20"><AddExpense groupId={id} currency={g.base_currency} members={members} me={user.id} /></div>
-    <section className="card space-y-3"><h2 className="font-display text-xl font-bold">Balances</h2>
-      {panels.map((p) => (<div key={p.cur} className="inset space-y-1"><p className="font-bold">{p.cur}</p>
-        {Object.entries(p.net).filter(([, v]) => v !== 0).map(([u, v]) => <p key={u} className={v >= 0 ? "text-emerald" : "text-coral"}>{name(u)}: {v >= 0 ? "is owed" : "owes"} {fmt(Math.abs(v), p.cur)}</p>)}
-        {p.transfers.length > 0 && <p className="text-xs opacity-70 pt-1">Suggested repayments (recommendation only):</p>}
+  return (<div className="space-y-4"><LiveRefresh groupId={id} />
+    <header className="flex flex-wrap items-center gap-x-2 gap-y-1"><h1 className="mr-1 font-display text-2xl font-bold">{g.name}</h1><span className="chip">{g.type}</span><span className="chip">{g.base_currency}</span><span className="chip">{members.length} people</span>{g.archived_at && <span className="chip">Archived</span>}</header>
+    <section className="card space-y-2"><h2 className="h-card">Balances</h2>
+      {panels.map((p) => (<div key={p.cur} className="inset space-y-1"><p className="chip">{p.cur}</p>
+        {Object.entries(p.net).filter(([, v]) => v !== 0).map(([u, v]) => <div key={u} className="flex items-baseline justify-between gap-2 text-sm"><span className="truncate">{name(u)}</span><span className="shrink-0"><span className="mr-2 text-xs text-muted">{v >= 0 ? "is owed" : "owes"}</span><span className={`font-mono font-semibold ${v >= 0 ? "text-good" : "text-accent"}`}>{fmt(Math.abs(v), p.cur)}</span></span></div>)}
+        {p.transfers.length > 0 && <p className="pt-1 text-xs text-muted">Suggested repayments (recommendation only)</p>}
         {p.transfers.map((t, i) => <SettleRow key={i} groupId={id} cur={p.cur} t={t} me={user.id} fromName={name(t.from)} toName={name(t.to)} nonce={(st ?? []).length} />)}
-        {Object.values(p.net).every((v) => v === 0) && <p>All settled.</p>}</div>))}
+        {Object.values(p.net).every((v) => v === 0) && <p className="text-sm text-muted">All settled.</p>}</div>))}
           </section>
-    <SettlementHistory settlements={st ?? []} members={members} me={user.id} isAdmin={isAdmin} />
-    <section className="card"><h2 className="font-display text-xl font-bold">Activity</h2>{!act?.length && <p>Nothing yet.</p>}<ul className="text-sm space-y-1 mt-2">{act?.map((a: any) => <li key={a.id}>{new Date(a.created_at).toLocaleString()} · {a.actor ? name(a.actor) : "Someone"} · {a.action.replace(".", " ")}{a.detail?.title ? ` “${a.detail.title}”` : ""}{a.detail?.amount != null ? ` (${fmt(Number(a.detail.amount), a.detail.currency)})` : ""}</li>)}</ul></section>
+    <div id="add-expense" className="scroll-mt-20"><AddExpense groupId={id} currency={g.base_currency} members={members} me={user.id} /></div>
     <ExpenseList groupId={id} expenses={ex ?? []} members={members} me={user.id} isAdmin={isAdmin} />
+    <SettlementHistory settlements={st ?? []} members={members} me={user.id} isAdmin={isAdmin} />
+    <GroupAdmin groupId={id} name={g.name} archived={!!g.archived_at} me={user.id} isAdmin={isAdmin} isOwner={isOwner} roster={roster} invites={(inv ?? []) as any} />
+    <details className="card"><summary className="sum"><span className="h-card">Activity</span></summary>{!act?.length && <p className="mt-2 text-sm text-muted">Nothing yet.</p>}<ul className="mt-2 space-y-1 text-xs text-muted">{act?.map((a: any) => <li key={a.id}>{new Date(a.created_at).toLocaleString()} · {a.actor ? name(a.actor) : "Someone"} · {a.action.replace(".", " ")}{a.detail?.title ? ` “${a.detail.title}”` : ""}{a.detail?.amount != null ? ` (${fmt(Number(a.detail.amount), a.detail.currency)})` : ""}</li>)}</ul></details>
   </div>);
 }

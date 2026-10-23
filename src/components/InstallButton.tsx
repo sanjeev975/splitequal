@@ -12,8 +12,8 @@ export function InstallButton() {
     return () => { window.removeEventListener("beforeinstallprompt", onPrompt); window.removeEventListener("appinstalled", onInstalled); };
   }, []);
   if (installed) return null;
-  if (evt) return <button className="btn !py-1 !px-3 text-sm" onClick={async () => { await evt.prompt(); await evt.userChoice; setEvt(null); }}><Download size={16} className="inline mr-1" />Install app</button>;
-  if (ios) return (<><button className="btn !py-1 !px-3 text-sm" onClick={() => setHint(!hint)}><Download size={16} className="inline mr-1" />Install</button>
+  if (evt) return <button className="btn btn-sm" onClick={async () => { await evt.prompt(); await evt.userChoice; setEvt(null); }}><Download size={16} className="inline mr-1" />Install app</button>;
+  if (ios) return (<><button className="btn btn-sm" onClick={() => setHint(!hint)}><Download size={16} className="inline mr-1" />Install</button>
     {hint && <p role="status" className="card fixed bottom-4 left-4 right-4 z-50 text-sm">On iPhone/iPad: tap the Share button in Safari, then “Add to Home Screen”.</p>}</>);
   return null;
 }

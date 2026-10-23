@@ -30,7 +30,7 @@ export default function Notifications() {
   }
   return (<div className="space-y-4"><div className="flex flex-wrap items-center justify-between gap-2"><h1 className="font-display text-3xl font-bold">Notifications</h1>
     <div className="flex items-center gap-3"><label className="flex gap-1 text-sm"><input type="checkbox" checked={unreadOnly} onChange={(e) => setUnreadOnly(e.target.checked)} />Unread only</label>
-      <button className="btn !py-1" onClick={async () => { await sb.rpc("mark_notifications_read", { p_ids: null }); load(); }}>Mark all read</button></div></div>
+      <button className="btn btn-sm" onClick={async () => { await sb.rpc("mark_notifications_read", { p_ids: null }); load(); }}>Mark all read</button></div></div>
     {banner && <p role="status" className="inset flex items-start justify-between gap-3 text-sm"><span>{banner}</span><button className="underline" onClick={() => setBanner("")}>Dismiss</button></p>}
     {items === null ? <p>Loading…</p> : !shown.length ? <p className="card">{unreadOnly ? "No unread notifications." : "Nothing yet. Activity in your groups will show up here."}</p> :
       shown.map((n) => (<button key={n.id} onClick={() => open(n)} className={`card block w-full text-left ${n.read_at ? "opacity-70" : "border-l-4 border-l-accent"} ${gone(n) ? "cursor-default" : ""}`}>

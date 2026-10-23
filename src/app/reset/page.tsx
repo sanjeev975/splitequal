@@ -10,7 +10,7 @@ export default function Reset() {
     e.preventDefault(); setBusy(true); setMsg(""); const { error } = await supabaseBrowser().auth.updateUser({ password: pw }); setBusy(false);
     if (error) return setMsg(error.message); r.push("/dashboard"); r.refresh();
   }
-  return (<main className="mx-auto max-w-sm px-5 py-16"><div className="card space-y-3">
+  return (<main className="mx-auto max-w-sm px-4 py-8"><div className="card space-y-3">
     {state === "checking" && <p>Checking your link…</p>}
     {state === "invalid" && <><h1 className="font-display text-2xl font-bold">This link isn't valid</h1><p className="text-sm">It may have expired, already been used, or been opened in a different browser than the one you asked from.</p><Link className="btn inline-block" href="/forgot">Request a new link</Link></>}
     {state === "ready" && <form onSubmit={save} className="space-y-3"><h1 className="font-display text-2xl font-bold">Choose a new password</h1>

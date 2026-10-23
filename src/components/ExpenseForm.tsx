@@ -46,13 +46,13 @@ export function AddExpense({ groupId, currency, members, me, edit, onDone, onSav
     setBusy(false); setTitle(""); setAmount(""); setNotes(""); setVals({}); setFile(null); setAdj({ tax: "", service: "", tip: "", discount: "" }); r.refresh(); onDone?.();
   }
   const hint = { equal: "", shares: "shares (whole numbers)", percent: "percent, e.g. 33.33", exact: `amount in ${currency}` }[method]; const nm = (id: string) => members.find((m) => m.user_id === id)?.name ?? "Member";
-  return (<form onSubmit={go} className="card space-y-3"><h2 className="font-display text-xl font-bold">{edit ? "Edit expense" : "Add expense"}</h2>
-    <div className="grid gap-2 sm:grid-cols-2">
-      <input className="field" placeholder="Title" required value={title} onChange={(e) => setTitle(e.target.value)} aria-label="Title" />
+  return (<form onSubmit={go} className="card space-y-3"><h2 className="h-card">{edit ? "Edit expense" : "Add expense"}</h2>
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <input className="field col-span-2 sm:col-span-3" placeholder="Title" required value={title} onChange={(e) => setTitle(e.target.value)} aria-label="Title" />
       <input className="field" type="date" required value={date} onChange={(e) => setDate(e.target.value)} aria-label="Date" />
       <input className="field" inputMode="decimal" placeholder={`Amount (${currency})`} required value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="Amount" />
-      <select className="field" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Category">{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
-    <textarea className="field" rows={2} maxLength={500} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} aria-label="Notes" />
+      <select className="field col-span-2 sm:col-span-1" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Category">{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></div>
+    <details className="inset"><summary className="sum text-sm">Notes{!edit && !onSave ? " & receipt" : ""} <span className="text-xs font-normal text-muted">optional</span></summary><div className="mt-2 space-y-2"><textarea className="field" rows={2} maxLength={500} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} aria-label="Notes" />{!edit && !onSave && <label className="block text-xs text-muted">Receipt (optional, JPG/PNG/WebP/PDF, max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></label>}</div></details>
     <details className="inset"><summary className="cursor-pointer font-semibold">Tax, service charge, tip, discount (optional)</summary>
       <div className="grid grid-cols-2 gap-2 mt-2">{(["tax", "service", "tip", "discount"] as const).map((k) => <label key={k} className="text-sm capitalize">{k}<input className="field" inputMode="decimal" value={adj[k]} onChange={(e) => setAdj({ ...adj, [k]: e.target.value })} /></label>)}</div>
       <p className="text-xs mt-1">Tax, service and tip are added on top of the amount above; discount is subtracted. The split uses the final total.</p></details>
@@ -66,7 +66,6 @@ export function AddExpense({ groupId, currency, members, me, edit, onDone, onSav
     <div className="receipt" aria-live="polite"><p className="font-bold">Live preview</p>
       {calc ? <><p>Total to split: {fmt(calc.total, currency)}</p>{Object.entries(calc.split).map(([id, a]) => <p key={id}>{nm(id)} owes {fmt(a, currency)}</p>)}
         <p className="text-xs opacity-70 mt-1">Any leftover paise are assigned deterministically so shares add up exactly.</p></> : <p className={calcErr ? "text-danger" : "opacity-70"} role={calcErr ? "alert" : undefined}>{calcErr || "Enter an amount to see the split."}</p>}</div>
-    {!edit && !onSave && <label className="text-sm block">Receipt (optional, JPG/PNG/WebP/PDF, max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></label>}
     {err && <p role="alert" className="text-danger text-sm">{err}</p>}
     <button className="btn btn-coral" disabled={busy || !calc}>{busy ? "Saving…" : edit ? "Save changes" : "Save expense"}</button></form>);
 }

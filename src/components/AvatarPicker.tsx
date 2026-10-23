@@ -27,12 +27,12 @@ export function AvatarPicker() {
       if (!(await save(p))) await sb.storage.from("avatars").remove([p]);
     } catch (x) { setMsg((x as Error).message); } setBusy(false);
   }
-  return (<section className="card space-y-3 max-w-md"><h2 className="font-display text-xl font-bold">Profile picture</h2>
-    <div className="flex items-center gap-4"><Avatar path={path} name={name} size={80} />
-      <div className="space-y-1"><label className="btn !py-1 inline-block cursor-pointer">{busy ? "Uploading…" : "Upload photo"}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busy} onChange={(e) => { upload(e.target.files?.[0]); e.target.value = ""; }} /></label>
+  return (<section className="card space-y-3 max-w-md"><h2 className="h-card">Profile picture</h2>
+    <div className="flex items-center gap-4"><Avatar path={path} name={name} size={64} />
+      <div className="space-y-1"><label className="btn btn-sm inline-block cursor-pointer">{busy ? "Uploading…" : "Upload photo"}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busy} onChange={(e) => { upload(e.target.files?.[0]); e.target.value = ""; }} /></label>
         {path && <button className="block underline text-sm" onClick={() => save(null)}>Remove picture</button>}</div></div>
     <fieldset><legend className="text-sm font-semibold mb-1">Or pick an avatar</legend><div className="flex flex-wrap gap-2">
-      {PRESETS.map((p) => <button key={p.id} type="button" aria-label={`Avatar ${p.id}`} aria-pressed={path === `preset:${p.id}`} onClick={() => save(`preset:${p.id}`)} className={`rounded-full p-0.5 ${path === `preset:${p.id}` ? "ring-4 ring-volt" : ""}`}><Avatar path={`preset:${p.id}`} name="" size={44} /></button>)}</div></fieldset>
+      {PRESETS.map((p) => <button key={p.id} type="button" aria-label={`Avatar ${p.id}`} aria-pressed={path === `preset:${p.id}`} onClick={() => save(`preset:${p.id}`)} className={`rounded-full p-0.5 ${path === `preset:${p.id}` ? "ring-4 ring-volt" : ""}`}><Avatar path={`preset:${p.id}`} name="" size={36} /></button>)}</div></fieldset>
     <p className="text-xs">Photos are cropped to a square and shrunk on your device, and are visible only to people who share a group with you.</p>
     {msg && <p role="status" className="text-sm">{msg}</p>}</section>);
 }

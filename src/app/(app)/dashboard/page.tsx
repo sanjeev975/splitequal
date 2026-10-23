@@ -32,20 +32,23 @@ export default async function Dashboard() {
   for (const e of ex ?? []) for (const s of (e as any).expense_splits) if (s.user_id === user.id) { const k = `${(e as any).currency} ${(e as any).expense_date.slice(0, 7)}`; month[k] = (month[k] ?? 0) + Number(s.amount_minor); }
   const mrows = Object.entries(month).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6); const mmax = Math.max(1, ...mrows.map((r) => r[1]));
   if (!groups?.length) return <div className="card space-y-3"><h1 className="font-display text-3xl font-bold">Welcome to Splitequal</h1><p>No groups yet — create one to start sharing expenses.</p><Link className="btn btn-coral inline-block" href="/groups">Create a group</Link></div>;
-  return (<div className="space-y-6">
-    <div className="flex items-center justify-between"><h1 className="font-display text-3xl font-bold">Dashboard</h1><Link className="btn btn-coral" href="/add">+ Quick add expense</Link></div>
-    {Object.keys(tot).length === 0 && <p className="card">No expenses yet. Open a group and add one.</p>}
-    {Object.entries(tot).map(([cur, t]) => (<section key={cur} className="grid gap-3 sm:grid-cols-3" aria-label={`${cur} summary`}>
-      <div className="inset"><p className="text-sm">You owe ({cur})</p><p className="font-mono text-2xl text-coral">{fmt(t.owe, cur)}</p></div>
-      <div className="inset"><p className="text-sm">You are owed ({cur})</p><p className="font-mono text-2xl text-emerald">{fmt(t.owed, cur)}</p></div>
-      <div className="inset"><p className="text-sm">Net ({cur})</p><p className="font-mono text-2xl">{t.owed - t.owe < 0 ? "−" : ""}{fmt(Math.abs(t.owed - t.owe), cur)}</p></div></section>))}
-    <section className="card"><h2 className="font-display text-xl font-bold">Active groups</h2><ul className="mt-2 flex flex-wrap gap-2">{groups.map((g) => <li key={g.id}><Link className="underline" href={`/groups/${g.id}`}>{g.name}</Link></li>)}</ul></section>
-    <section className="card"><h2 className="font-display text-xl font-bold">My monthly share</h2>{mrows.length === 0 && <p>No shares yet.</p>}
-      {mrows.map(([k, v]) => <div key={k} className="mt-2 text-sm"><div className="flex justify-between"><span>{k}</span><span className="font-mono">{fmt(v, k.slice(0, 3))}</span></div>
-        <div className="h-3 overflow-hidden rounded-full bg-inset"><div className="h-full bg-primary" style={{ width: `${(v / mmax) * 100}%` }} /></div></div>)}</section>
-    <section className="space-y-2"><h2 className="font-display text-xl font-bold">Recent expenses</h2>{(ex ?? []).slice(0, 5).map((e: any) => (
-      <Link key={e.id} href={`/groups/${e.group_id}`} className="receipt block"><div className="flex justify-between font-bold"><span>{e.title}</span><span>{fmt(Number(e.amount_minor), e.currency)}</span></div><p className="text-sm">{gname(e.group_id)} · {e.expense_date}</p></Link>))}</section>
-    <section className="card"><h2 className="font-display text-xl font-bold">Recent settlements</h2>{!st?.length && <p>None yet.</p>}
-      {(st ?? []).slice(0, 5).map((s: any) => <p key={s.id} className="text-sm">{pname(s.from_user)} → {pname(s.to_user)} {fmt(Number(s.amount_minor), s.currency)} · {s.status} · {gname(s.group_id)}</p>)}</section>
+  return (<div className="space-y-4">
+    <div className="flex items-center justify-between gap-2"><h1 className="font-display text-2xl font-bold">Dashboard</h1><Link className="btn btn-coral btn-sm" href="/add">+ Add expense</Link></div>
+    {Object.keys(tot).length === 0 && <p className="card text-sm">No expenses yet. Open a group and add one.</p>}
+    {Object.entries(tot).map(([cur, t]) => (<section key={cur} aria-label={`${cur} summary`} className="no-scrollbar -mx-3 flex snap-x gap-2 overflow-x-auto px-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+      {[["You owe", fmt(t.owe, cur), "text-accent"], ["You are owed", fmt(t.owed, cur), "text-good"], ["Net", `${t.owed - t.owe < 0 ? "−" : ""}${fmt(Math.abs(t.owed - t.owe), cur)}`, ""]].map(([l, v, c]) => (
+        <div key={l} className="inset min-w-[8.5rem] flex-1 snap-start"><p className="text-xs text-muted">{l} <span className="chip !px-1.5 !py-0">{cur}</span></p><p className={`font-mono text-lg font-bold ${c}`}>{v}</p></div>))}</section>))}
+    <section><h2 className="h-sec mb-1.5">Groups</h2><div className="flex flex-wrap gap-1.5">{groups.map((g) => <Link key={g.id} href={`/groups/${g.id}`} className="chip-link">{g.name}</Link>)}</div></section>
+    <section className="card"><h2 className="h-card">My monthly share</h2>{mrows.length === 0 && <p className="mt-1 text-sm text-muted">No shares yet.</p>}
+      {mrows.map(([k, v]) => <div key={k} className="mt-2 text-sm"><div className="flex justify-between"><span className="text-muted">{k}</span><span className="font-mono font-semibold">{fmt(v, k.slice(0, 3))}</span></div>
+        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-inset"><div className="h-full bg-primary" style={{ width: `${(v / mmax) * 100}%` }} /></div></div>)}</section>
+    <section className="card !p-0"><h2 className="h-sec px-3.5 pb-1 pt-3">Recent expenses</h2>{!(ex ?? []).length && <p className="px-3.5 pb-3 text-sm text-muted">Nothing yet.</p>}
+      <ul className="divide-y divide-border">{(ex ?? []).slice(0, 5).map((e: any) => (<li key={e.id}><Link href={`/groups/${e.group_id}`} className="flex min-h-[44px] items-center justify-between gap-3 px-3.5 py-2">
+        <span className="min-w-0"><span className="block truncate text-sm font-semibold">{e.title}</span><span className="block truncate text-xs text-muted">{gname(e.group_id)} · {e.expense_date}</span></span>
+        <span className="shrink-0 font-mono text-sm font-bold">{fmt(Number(e.amount_minor), e.currency)}</span></Link></li>))}</ul></section>
+    <section className="card !p-0"><h2 className="h-sec px-3.5 pb-1 pt-3">Recent payments</h2>{!st?.length && <p className="px-3.5 pb-3 text-sm text-muted">None yet.</p>}
+      <ul className="divide-y divide-border">{(st ?? []).slice(0, 5).map((s: any) => (<li key={s.id} className="flex min-h-[44px] items-center justify-between gap-3 px-3.5 py-2 text-sm">
+        <span className="min-w-0 truncate">{pname(s.from_user)} → {pname(s.to_user)} <span className="text-xs text-muted">· {gname(s.group_id)}</span></span>
+        <span className="flex shrink-0 items-center gap-2"><span className="font-mono font-semibold">{fmt(Number(s.amount_minor), s.currency)}</span><span className="chip">{s.status}</span></span></li>))}</ul></section>
   </div>);
 }

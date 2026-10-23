@@ -19,7 +19,7 @@ export function SettleRow({ groupId, cur, t, me, fromName, toName, nonce, pendin
   async function confirm() { const { error } = await sb.rpc("confirm_settlement", { p_id: pendingId }); if (error) setErr(error.message); else r.refresh(); }
   return (<div className="flex flex-wrap items-center gap-2 text-sm">
     <span>{pendingId ? "Pending: " : ""}{fromName} → {toName}: <b>{fmt(t.amount, cur)}</b></span>
-    {!pendingId && t.from === me && <button className="btn btn-coral !py-1" onClick={() => setOpen(true)}>Settle up</button>}{open && <PayDialog groupId={groupId} cur={cur} to={t.to} toName={toName} amount={t.amount} me={me} nonce={nonce} onClose={() => setOpen(false)} />}
-    {pendingId && t.to === me && <button className="btn !py-1" onClick={confirm}>Confirm received</button>}
+    {!pendingId && t.from === me && <button className="btn btn-coral btn-sm" onClick={() => setOpen(true)}>Settle up</button>}{open && <PayDialog groupId={groupId} cur={cur} to={t.to} toName={toName} amount={t.amount} me={me} nonce={nonce} onClose={() => setOpen(false)} />}
+    {pendingId && t.to === me && <button className="btn btn-sm" onClick={confirm}>Confirm received</button>}
     {err && <span role="alert" className="text-danger">{err}</span>}</div>);
 }

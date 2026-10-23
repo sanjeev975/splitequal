@@ -23,15 +23,28 @@
     color-scheme: dark;
   }
 }
-body { @apply bg-bg text-fg antialiased; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
 :focus-visible { outline: 3px solid rgb(var(--ring)); outline-offset: 2px; }
 ::selection { background: rgb(var(--primary) / 0.25); }
+@layer base { html { font-size: 15px; } } /* every rem-based size shrinks ~6% */
 @layer components {
-  .card { @apply rounded-2xl border border-border bg-card p-5 shadow-sm; }
+  .card { @apply rounded-2xl border border-border bg-card p-3.5 shadow-sm md:p-4; }
   .receipt { @apply card font-mono border-dashed; }
-  .inset { @apply rounded-xl border border-border bg-inset p-3; }
-  .btn { @apply inline-block rounded-full bg-primary px-4 py-2 text-center font-semibold text-on transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .inset { @apply rounded-xl border border-border bg-inset p-2.5; }
+  .btn { @apply inline-block min-h-[36px] rounded-full bg-primary px-4 py-1.5 text-center text-sm font-semibold text-on transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-sm { @apply min-h-[30px] px-3 py-1 text-[13px]; }
   .btn-coral { @apply bg-accent; }
-  .field { @apply w-full rounded-xl border border-border bg-card px-3 py-2 text-fg placeholder:text-muted; }
+  .field { @apply min-h-[36px] w-full rounded-xl border border-border bg-card px-3 py-1.5 text-sm text-fg placeholder:text-muted; }
+  .chip { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-border bg-inset px-2 py-0.5 text-xs font-normal text-muted; }
+  .chip-link { @apply inline-flex min-h-[36px] items-center rounded-full border border-border bg-card px-3 text-sm font-medium text-fg hover:border-primary; }
+  .h-card { @apply font-display text-[15px] font-semibold; }
+  .h-sec { @apply text-xs font-semibold uppercase tracking-wide text-muted; }
+  .no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }
+  summary.sum { @apply flex min-h-[36px] cursor-pointer select-none items-center justify-between gap-2 font-semibold; list-style: none; }
+  summary.sum::-webkit-details-marker { display: none; }
+  summary.sum::after { content: ""; flex: none; width: .45rem; height: .45rem; margin-right: .2rem; border-right: 2px solid rgb(var(--muted)); border-bottom: 2px solid rgb(var(--muted)); transform: rotate(45deg); transition: transform .15s; }
+  details[open] > summary.sum::after { transform: rotate(-135deg); }
+  /* Touch screens: keep real tap targets (42-44px) with padding, and 16px inputs so iOS Safari doesn't zoom the page on focus. */
+  @media (pointer: coarse) { .btn { min-height: 42px; } .btn-sm { min-height: 36px; } .field { min-height: 42px; font-size: 16px; } summary.sum { min-height: 44px; } .chip-link { min-height: 40px; } }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -17,11 +17,11 @@ export default function Profile() {
     setMsg(error ? (error.code === "23505" ? "That username is taken." : error.code === "23514" ? "Username must be 3–20 letters, numbers or _." : error.message) : "Saved.");
   }
   const zones = (Intl as any).supportedValuesOf?.("timeZone") as string[] | undefined ?? ["Asia/Kolkata", "UTC"];
-  return (<div className="space-y-6"><AvatarPicker /><ThemeSetting /><form onSubmit={save} className="card space-y-3 max-w-md"><h1 className="font-display text-2xl font-bold">Profile & settings</h1>
+  return (<div className="space-y-4"><AvatarPicker /><ThemeSetting /><form onSubmit={save} className="card space-y-3 max-w-md"><h1 className="font-display text-2xl font-bold">Profile & settings</h1>
     <label className="block text-sm">Email<input className="field" readOnly value={email} aria-readonly="true" /></label><p className="text-xs -mt-2">The email you sign in with. It isn't shown to other members.</p>
     <label className="block text-sm">Display name<input className="field" required value={f.display_name} onChange={(e) => setF({ ...f, display_name: e.target.value })} /></label>
     <label className="block text-sm">Username<input className="field" required value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></label>
     <label className="block text-sm">Default currency<select className="field" value={f.default_currency} onChange={(e) => setF({ ...f, default_currency: e.target.value })}>{CUR.map((c) => <option key={c}>{c}</option>)}</select></label>
     <label className="block text-sm">Time zone<select className="field" value={f.time_zone} onChange={(e) => setF({ ...f, time_zone: e.target.value })}>{zones.map((z) => <option key={z}>{z}</option>)}</select></label>
-    <button className="btn">Save</button>{msg && <p role="status" className="text-sm">{msg}</p>}</form><PaymentHandles /><AccountData /><section className="card max-w-md space-y-2"><h2 className="font-display text-xl font-bold">Session</h2><SignOut /></section></div>);
+    <button className="btn">Save</button>{msg && <p role="status" className="text-sm">{msg}</p>}</form><PaymentHandles /><AccountData /><section className="card max-w-md space-y-2"><h2 className="h-card">Session</h2><SignOut /></section></div>);
 }

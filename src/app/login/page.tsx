@@ -43,8 +43,8 @@ export default function Login() {
     if (error) return setMsg(/captcha/i.test(error.message) ? "Security check failed. Please try again." : /rate limit|too many|seconds/i.test(error.message) ? "Too many emails were sent. Please wait a few minutes and try again." : error.message);
     setCooldown(60); setNote("We've sent it again.");
   }
-  if (sent) return (<main className="mx-auto max-w-sm px-5 py-16"><Logo />
-    <div className="card mt-6 space-y-3" role="status">
+  if (sent) return (<main className="mx-auto max-w-sm px-4 py-8"><Logo />
+    <div className="card mt-4 space-y-3" role="status">
       <h1 className="font-display text-2xl font-bold text-emerald">{sent.kind === "new" ? "Check your email" : "Confirm your email first"}</h1>
       <p>{sent.kind === "new" ? "We sent a confirmation link to" : "Your account isn't active yet. We can send the confirmation link to"} <b className="break-all">{sent.email}</b>.</p>
       <ul className="list-disc space-y-1 pl-5 text-sm"><li>It can take a minute or two to arrive.</li><li>Look in your spam or promotions folder.</li><li>Open the link in this same browser if you can.</li></ul>
@@ -53,8 +53,8 @@ export default function Login() {
       <button className="btn w-full" onClick={resend} disabled={cooldown > 0 || resendBusy || (turnstileEnabled && !captcha)}>{resendBusy ? "Sending…" : cooldown > 0 ? `Resend email in ${cooldown}s` : "Resend email"}</button>
       <button className="block text-sm underline" onClick={() => { setSent(null); setMsg(""); setNote(""); }}>{sent.kind === "new" ? "Wrong email? Go back" : "Back to sign in"}</button>
     </div><LegalFooter /></main>);
-  return (<main className="mx-auto max-w-sm px-5 py-16"><Logo />
-    <form onSubmit={go} className="card mt-6 space-y-3">
+  return (<main className="mx-auto max-w-sm px-4 py-8"><Logo />
+    <form onSubmit={go} className="card mt-4 space-y-3">
       <h1 className="font-display text-2xl font-bold">{mode === "in" ? "Welcome back" : "Create account"}</h1>
       {mode === "up" && <><input className="field" placeholder="Display name" required value={name} onChange={(e) => setName(e.target.value)} aria-label="Display name" />
         <input className="field" placeholder="Username" required value={username} onChange={(e) => setUsername(e.target.value)} onBlur={checkUser} aria-label="Username" />{uHint && <p className="text-sm" role="status">{uHint}</p>}</>}

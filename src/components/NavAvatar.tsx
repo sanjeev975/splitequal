@@ -8,5 +8,5 @@ export function NavAvatar() {
   const load = useCallback(async () => { const sb = supabaseBrowser(); const { data: { user } } = await sb.auth.getUser(); if (!user) return;
     const { data } = await sb.from("profiles").select("avatar_path,display_name").eq("id", user.id).single(); if (data) setP(data); }, []);
   useEffect(() => { load(); window.addEventListener("avatar-changed", load); return () => window.removeEventListener("avatar-changed", load); }, [load]);
-  return p ? <Link href="/profile" aria-label="Your profile"><Avatar path={p.avatar_path} name={p.display_name} size={32} /></Link> : null;
+  return p ? <Link href="/profile" aria-label="Your profile"><Avatar path={p.avatar_path} name={p.display_name} size={28} /></Link> : null;
 }

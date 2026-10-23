@@ -14,7 +14,7 @@ export function PaymentHandles() {
     const { error } = await sb.from("payment_handles").upsert({ user_id: uid, upi_id: n || null, venmo_handle: v || null, updated_at: new Date().toISOString() }); // raw UPI ID only
     if (!error) setUpi(n); setMsg(error ? error.message : "Saved.");
   }
-  return (<form onSubmit={save} className="card space-y-3 max-w-md"><h2 className="font-display text-xl font-bold">Payment details</h2>
+  return (<form onSubmit={save} className="card space-y-3 max-w-md"><h2 className="h-card">Payment details</h2>
     <p className="text-sm">Optional. Lets people who owe you open their payment app with your details pre-filled. <b>Visible to members of groups you're in.</b></p>
     <label className="block text-sm">UPI ID (for INR)<input className="field" placeholder="9548967357@ibl or name@oksbi" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={upi} onChange={(e) => setUpi(e.target.value)} onBlur={() => setUpi(normalizeUpi(upi))} aria-describedby="upi-hint" /></label>
     <p id="upi-hint" className="text-xs -mt-2">Just your UPI ID — we build the payment link for you when someone settles up. {upiHint}</p>

@@ -19,8 +19,8 @@ export default function GuestHome() {
     if (!f) return; setMsg(""); try { const v = JSON.parse(await f.text()); const list = (Array.isArray(v) ? v : []).map(cleanGroup); if (!list.length || list.includes(null)) return setMsg("That file isn't a valid Splitequal backup.");
       update((gs) => { const have = new Set(gs.map((g) => g.id)); return [...(list as LocalGroup[]).filter((g) => !have.has(g.id)), ...gs]; }); setMsg("Backup restored."); } catch { setMsg("Couldn't read that file."); }
   }
-  return (<div className="space-y-5"><h1 className="font-display text-3xl font-bold">Your guest groups</h1>
-    <form onSubmit={create} className="card space-y-3"><h2 className="font-display text-xl font-bold">New group</h2>
+  return (<div className="space-y-3.5"><h1 className="font-display text-3xl font-bold">Your guest groups</h1>
+    <form onSubmit={create} className="card space-y-3"><h2 className="h-card">New group</h2>
       <div className="grid gap-2 sm:grid-cols-3"><input className="field sm:col-span-3" required maxLength={80} placeholder="Group name (e.g. Goa trip)" value={name} onChange={(e) => setName(e.target.value)} aria-label="Group name" />
         <select className="field" value={type} onChange={(e) => setType(e.target.value)} aria-label="Type">{TYPES.map((t) => <option key={t}>{t}</option>)}</select>
         <select className="field" value={cur} onChange={(e) => setCur(e.target.value)} aria-label="Currency">{CUR.map((c) => <option key={c}>{c}</option>)}</select>

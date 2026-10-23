@@ -13,7 +13,7 @@ export default function Join() {
     if (error) return setErr(error.message === "invalid invite" ? "This invite link isn't valid." : error.message);
     r.push(`/groups/${data}`);
   }
-  return (<main className="mx-auto max-w-sm px-5 py-16"><Logo /><div className="card mt-6 space-y-3"><h1 className="font-display text-2xl font-bold">You've been invited to a group</h1>
+  return (<main className="mx-auto max-w-sm px-4 py-8"><Logo /><div className="card mt-4 space-y-3"><h1 className="font-display text-2xl font-bold">You've been invited to a group</h1>
     {authed === null ? <p>Checking…</p> : authed ? <button className="btn btn-coral w-full" onClick={join} disabled={busy}>{busy ? "Joining…" : "Join group"}</button>
       : <Link className="btn w-full block text-center" href={`/login?next=${encodeURIComponent(`/join/${token}`)}`}>Sign in or sign up to join</Link>}
     {err && <p role="alert" className="text-danger text-sm">{err}</p>}</div></main>);

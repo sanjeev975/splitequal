@@ -21,8 +21,8 @@ export function ExpenseActions({ groupId, members, me, e }: { groupId: string; m
   if (editing) return <AddExpense groupId={groupId} currency={e.currency} members={members} me={me} onDone={() => setEditing(false)}
     edit={{ id: e.id, title: e.title, amountMinor: Number(e.amount_minor), date: e.expense_date, category: e.category, notes: e.notes ?? "", payments: pay, splits: Object.fromEntries(spl.map((s: any) => [s.user_id, s.amount])) }} />;
   return (<div className="mt-2 flex flex-wrap gap-2 font-sans">
-    <button className="btn !py-1 !px-3 text-sm" onClick={() => setEditing(true)}>Edit</button>
-    <button className="btn !py-1 !px-3 text-sm" onClick={dup}>Duplicate</button>
-    <button className="btn btn-coral !py-1 !px-3 text-sm" onClick={del}>Delete</button>
+    <button className="btn btn-sm" onClick={() => setEditing(true)}>Edit</button>
+    <button className="btn btn-sm" onClick={dup}>Duplicate</button>
+    <button className="btn btn-coral btn-sm" onClick={del}>Delete</button>
     {err && <span role="alert" className="text-danger text-sm">{err}</span>}</div>);
 }
