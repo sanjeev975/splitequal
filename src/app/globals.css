@@ -31,8 +31,9 @@ body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe
   .card { @apply rounded-2xl border border-border bg-card p-3.5 shadow-sm md:p-4; }
   .receipt { @apply card font-mono border-dashed; }
   .inset { @apply rounded-xl border border-border bg-inset p-2.5; }
-  .btn { @apply inline-block min-h-[36px] rounded-full bg-primary px-4 py-1.5 text-center text-sm font-semibold text-on transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-sm { @apply min-h-[30px] px-3 py-1 text-[13px]; }
+  .btn { @apply inline-block min-h-[36px] rounded-2xl bg-primary px-4 py-1.5 text-center text-sm font-semibold leading-tight text-on transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-sm { @apply min-h-[30px] rounded-full px-3 py-1 text-[13px]; }
+  .btn { text-wrap: balance; overflow-wrap: anywhere; max-width: 100%; } /* long labels wrap evenly instead of spilling out */
   .btn-coral { @apply bg-accent; }
   .field { @apply min-h-[36px] w-full rounded-xl border border-border bg-card px-3 py-1.5 text-sm text-fg placeholder:text-muted; }
   .chip { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-border bg-inset px-2 py-0.5 text-xs font-normal text-muted; }

@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
+import { membersByGroup } from "@/lib/members";
+import { QuickAdd } from "@/components/QuickAdd";
 export const metadata = { title: "Add expense · Splitequal" };
-// The "Add" tab: one group -> straight to its expense form; several -> pick one; none -> create one.
-export default async function AddPick() {
-  const sb = await supabaseServer();
-  const { data: groups } = await sb.from("groups").select("id,name,type,base_currency").is("archived_at", null).order("created_at", { ascending: false });
-  if (groups?.length === 1) redirect(`/groups/${groups[0].id}#add-expense`);
-  return (<div className="space-y-4"><h1 className="font-display text-3xl font-bold">Add an expense</h1>
-    {!groups?.length ? <div className="card space-y-3"><p>You need a group first.</p><Link className="btn" href="/groups">Create a group</Link></div> :
-      <><p className="text-muted">Which group is it for?</p>
-        <ul className="grid gap-3 sm:grid-cols-2">{groups.map((g) => <li key={g.id}><Link href={`/groups/${g.id}#add-expense`} className="card block transition hover:border-primary"><p className="font-display text-xl font-bold">{g.name}</p><p className="text-sm text-muted">{g.type} · {g.base_currency}</p></Link></li>)}</ul></>}
-  </div>);
+export default async function AddExpensePage({ searchParams }: { searchParams: Promise<{ g?: string }> }) {
+  const { g } = await searchParams; const sb = await supabaseServer();
+  const [{ data: { user } }, { data: groups }, { data: mem }] = await Promise.all([
+    sb.auth.getUser(),
+    sb.from("groups").select("id,name,base_currency").is("archived_at", null).order("created_at", { ascending: false }),
+    sb.from("group_members").select("group_id,user_id,profiles(display_name,username)"), // members of every group you're in (row-level security)
+  ]);
+  if (!user) redirect("/login?next=%2Fadd");
+  return (<div className="space-y-3"><h1 className="font-display text-2xl font-bold">Add expense</h1>
+    {!groups?.length ? <div className="card space-y-2 text-sm"><p>Create a group first, then you can add expenses to it.</p><Link className="btn" href="/groups">Create a group</Link></div>
+      : <QuickAdd groups={groups as any} membersByGroup={membersByGroup(mem ?? [])} me={user.id} initial={groups.some((x: any) => x.id === g) ? (g as string) : groups[0].id} />}</div>);
 }
