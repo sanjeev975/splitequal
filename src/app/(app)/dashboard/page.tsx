@@ -34,8 +34,8 @@ export default async function Dashboard() {
   if (!groups?.length) return <div className="card space-y-3"><h1 className="font-display text-3xl font-bold">Welcome to Splitequal</h1><p>No groups yet — create one to start sharing expenses.</p><Link className="btn btn-coral inline-block" href="/groups">Create a group</Link></div>;
   return (<div className="space-y-4">
     <div className="flex items-center justify-between gap-2"><h1 className="font-display text-2xl font-bold">Dashboard</h1><Link className="btn btn-coral btn-sm" href="/add">+ Add expense</Link></div>
-    {Object.keys(tot).length === 0 && <p className="card text-sm">No expenses yet. Open a group and add one.</p>}
-    {Object.entries(tot).map(([cur, t]) => (<section key={cur} aria-label={`${cur} summary`} className="no-scrollbar -mx-3 flex snap-x gap-2 overflow-x-auto px-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+    {(ex ?? []).length === 0 && <p className="card text-sm">No expenses yet. Tap Add to record your first one.</p>}
+    {Object.entries(tot).filter(([, t]) => t.owe > 0 || t.owed > 0).map(([cur, t]) => (<section key={cur} aria-label={`${cur} summary`} className="no-scrollbar -mx-3 flex snap-x gap-2 overflow-x-auto px-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
       {[["You owe", fmt(t.owe, cur), "text-accent"], ["You are owed", fmt(t.owed, cur), "text-good"], ["Net", `${t.owed - t.owe < 0 ? "−" : ""}${fmt(Math.abs(t.owed - t.owe), cur)}`, ""]].map(([l, v, c]) => (
         <div key={l} className="inset min-w-[8.5rem] flex-1 snap-start"><p className="text-xs text-muted">{l} <span className="chip !px-1.5 !py-0">{cur}</span></p><p className={`font-mono text-lg font-bold ${c}`}>{v}</p></div>))}</section>))}
     <section><h2 className="h-sec mb-1.5">Groups</h2><div className="flex flex-wrap gap-1.5">{groups.map((g) => <Link key={g.id} href={`/groups/${g.id}`} className="chip-link">{g.name}</Link>)}</div></section>

@@ -5,7 +5,7 @@ import { CATEGORIES } from "./ExpenseForm";
 import { ExpenseActions } from "./ExpenseTools";
 import { Receipts } from "./Receipts";
 const shortDate = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-export function ExpenseList({ groupId, expenses, members, me, isAdmin }: { groupId: string; expenses: any[]; members: { user_id: string; name: string }[]; me: string; isAdmin: boolean }) {
+export function ExpenseList({ groupId, expenses, members, me, isAdmin, personal }: { groupId: string; expenses: any[]; members: { user_id: string; name: string }[]; me: string; isAdmin: boolean; personal?: boolean }) {
   const [q, setQ] = useState(""); const [cat, setCat] = useState(""); const [who, setWho] = useState(""); const [from, setFrom] = useState(""); const [to, setTo] = useState("");
   const nm = (id: string) => members.find((m) => m.user_id === id)?.name ?? "Former member";
   const list = expenses.filter((e) => (!q || `${e.title} ${e.notes ?? ""}`.toLowerCase().includes(q.toLowerCase())) && (!cat || e.category === cat)
@@ -29,7 +29,7 @@ export function ExpenseList({ groupId, expenses, members, me, isAdmin }: { group
           <span className="shrink-0 font-mono text-sm font-bold">{fmt(Number(e.amount_minor), e.currency)}</span></summary>
         <div className="space-y-2 border-t border-border px-3 pb-3 pt-2 text-sm">
           {e.notes && <p className="italic text-muted">{e.notes}</p>}
-          <div className="grid grid-cols-2 gap-3"><div><p className="h-sec mb-0.5">Paid</p>{rows(e.expense_payments, e.currency)}</div><div><p className="h-sec mb-0.5">Owes</p>{rows(e.expense_splits, e.currency)}</div></div>
+          {!personal && <div className="grid grid-cols-2 gap-3"><div><p className="h-sec mb-0.5">Paid</p>{rows(e.expense_payments, e.currency)}</div><div><p className="h-sec mb-0.5">Owes</p>{rows(e.expense_splits, e.currency)}</div></div>}
           <Receipts groupId={groupId} expenseId={e.id} files={e.expense_attachments ?? []} canEdit={mine} />
-          {mine && <ExpenseActions groupId={groupId} members={members} me={me} e={e} />}</div></details>); })}</section>);
+          {mine && <ExpenseActions groupId={groupId} members={members} me={me} e={e} personal={personal} />}</div></details>); })}</section>);
 }

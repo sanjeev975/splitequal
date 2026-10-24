@@ -10,7 +10,7 @@ type M = { user_id: string; name: string };
 export type GuestSave = { title: string; amountMinor: number; date: string; category: string; method: string; notes: string | null; payments: { member: string; amount: number }[]; splits: { member: string; amount: number }[] };
 export type Edit = { id: string; title: string; amountMinor: number; date: string; category: string; notes: string; payments: { user_id: string; amount: number }[]; splits: Record<string, number> };
 const money = (n: number) => `${Math.floor(n / 100)}.${String(n % 100).padStart(2, "0")}`;
-export function AddExpense({ groupId, currency, members, me, edit, onDone, onSave }: { groupId: string; currency: string; members: M[]; me: string; edit?: Edit; onDone?: () => void; onSave?: (e: GuestSave) => void }) {
+export function AddExpense({ groupId, currency, members, me, edit, onDone, onSave, personal }: { groupId: string; currency: string; members: M[]; me: string; edit?: Edit; onDone?: () => void; onSave?: (e: GuestSave) => void; personal?: boolean }) {
   const r = useRouter(); const sb = supabaseBrowser();
   const [title, setTitle] = useState(edit?.title ?? ""); const [date, setDate] = useState(edit?.date ?? new Date().toISOString().slice(0, 10));
   const [category, setCategory] = useState(edit?.category ?? "Other"); const [notes, setNotes] = useState(edit?.notes ?? "");
@@ -24,6 +24,7 @@ export function AddExpense({ groupId, currency, members, me, edit, onDone, onSav
   const opt = (v: string) => (v.trim() ? toMinor(v, currency) : 0);
   function compute() {
     const total = totalWithAdjustments(toMinor(amount, currency), { tax: opt(adj.tax), service: opt(adj.service), tip: opt(adj.tip), discount: opt(adj.discount) });
+    if (personal) return { total, payments: [{ userId: me, amount: total }], split: { [me]: total } }; // just you: you pay, you owe
     const payments = multi ? members.filter((m) => payAmts[m.user_id]?.trim()).map((m) => ({ userId: m.user_id, amount: toMinor(payAmts[m.user_id], currency) })) : [{ userId: payer, amount: total }];
     validatePayments(total, payments);
     const ps = members.filter((m) => sel[m.user_id]).map((m) => { const v = vals[m.user_id] || "0";
@@ -56,16 +57,17 @@ export function AddExpense({ groupId, currency, members, me, edit, onDone, onSav
     <details className="inset"><summary className="cursor-pointer font-semibold">Tax, service charge, tip, discount (optional)</summary>
       <div className="grid grid-cols-2 gap-2 mt-2">{(["tax", "service", "tip", "discount"] as const).map((k) => <label key={k} className="text-sm capitalize">{k}<input className="field" inputMode="decimal" value={adj[k]} onChange={(e) => setAdj({ ...adj, [k]: e.target.value })} /></label>)}</div>
       <p className="text-xs mt-1">Tax, service and tip are added on top of the amount above; discount is subtracted. The split uses the final total.</p></details>
-    <div className="space-y-2"><label className="text-sm flex items-center gap-2"><input type="checkbox" checked={multi} onChange={(e) => setMulti(e.target.checked)} />Multiple payers</label>
+    {!personal && (<><div className="space-y-2"><label className="text-sm flex items-center gap-2"><input type="checkbox" checked={multi} onChange={(e) => setMulti(e.target.checked)} />Multiple payers</label>
       {!multi ? <label className="text-sm block">Paid by<select className="field" value={payer} onChange={(e) => setPayer(e.target.value)}>{members.map((m) => <option key={m.user_id} value={m.user_id}>{m.name}</option>)}</select></label>
         : <div className="inset space-y-1">{members.map((m) => <label key={m.user_id} className="flex items-center gap-2 text-sm"><span className="flex-1">{m.name} paid</span><input className="field !w-32" inputMode="decimal" placeholder="0.00" value={payAmts[m.user_id] ?? ""} onChange={(e) => setPayAmts({ ...payAmts, [m.user_id]: e.target.value })} /></label>)}</div>}</div>
     <label className="text-sm block">Split<select className="field" value={method} onChange={(e) => setMethod(e.target.value as Method)}>
       <option value="equal">Equally</option><option value="shares">By shares</option><option value="percent">By percentage</option><option value="exact">Exact amounts</option></select></label>
     <div className="inset space-y-2">{members.map((m) => (<div key={m.user_id} className="flex items-center gap-2"><label className="flex items-center gap-2 flex-1"><input type="checkbox" checked={!!sel[m.user_id]} onChange={(e) => setSel({ ...sel, [m.user_id]: e.target.checked })} />{m.name}</label>
       {method !== "equal" && sel[m.user_id] && <input className="field !w-32" placeholder={hint} aria-label={`${m.name} ${hint}`} value={vals[m.user_id] ?? ""} onChange={(e) => setVals({ ...vals, [m.user_id]: e.target.value })} />}</div>))}</div>
+    </>)}
     <div className="receipt" aria-live="polite"><p className="font-bold">Live preview</p>
-      {calc ? <><p>Total to split: {fmt(calc.total, currency)}</p>{Object.entries(calc.split).map(([id, a]) => <p key={id}>{nm(id)} owes {fmt(a, currency)}</p>)}
-        <p className="text-xs opacity-70 mt-1">Any leftover paise are assigned deterministically so shares add up exactly.</p></> : <p className={calcErr ? "text-danger" : "opacity-70"} role={calcErr ? "alert" : undefined}>{calcErr || "Enter an amount to see the split."}</p>}</div>
+      {calc ? <><p>{personal ? "Personal expense" : "Total to split"}: {fmt(calc.total, currency)}</p>{!personal && Object.entries(calc.split).map(([id, a]) => <p key={id}>{nm(id)} owes {fmt(a, currency)}</p>)}
+        {personal ? <p className="mt-1 text-xs text-muted">Only you can see this expense.</p> : <p className="mt-1 text-xs text-muted">Any leftover paise are assigned deterministically so shares add up exactly.</p>}</> : <p className={calcErr ? "text-danger" : "opacity-70"} role={calcErr ? "alert" : undefined}>{calcErr || "Enter an amount to see the split."}</p>}</div>
     {err && <p role="alert" className="text-danger text-sm">{err}</p>}
     <button className="btn btn-coral" disabled={busy || !calc}>{busy ? "Saving…" : edit ? "Save changes" : "Save expense"}</button></form>);
 }

@@ -1,7 +1,7 @@
 -- Run in the Supabase SQL editor. Creates two throwaway users, asserts isolation, then ROLLS BACK. Look for "RLS tests passed".
 begin;
 do $$
-declare a uuid := gen_random_uuid(); b uuid := gen_random_uuid(); g uuid; t text; n int; c uuid := gen_random_uuid(); s1 uuid; s2 uuid; sh uuid; g2 uuid; pl jsonb; g3 uuid; t3 text; s3 uuid; nl text; nb text;
+declare a uuid := gen_random_uuid(); b uuid := gen_random_uuid(); g uuid; t text; n int; c uuid := gen_random_uuid(); s1 uuid; s2 uuid; sh uuid; g2 uuid; pl jsonb; g3 uuid; t3 text; s3 uuid; nl text; nb text; pg1 uuid;
 begin
   insert into auth.users (id, email, email_confirmed_at) values (a, 'rls-a@test.invalid', now()), (b, 'rls-b@test.invalid', now());
   perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
@@ -67,6 +67,16 @@ begin
   assert nb is not null, 'the person who left is still notified';
   assert nl is null, 'no dead link to a group they cannot open';
   assert nb like '%INR 1.00%' and nb like '%not received%', 'message carries the amount and the reason: ' || nb; -- 100 paise = INR 1.00
+  -- personal space: private, one person, never shareable
+  perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true); set local role authenticated;
+  pg1 := get_or_create_personal_group('INR'); assert get_or_create_personal_group('INR') = pg1, 'the personal space is created once';
+  perform create_expense(pg1, 'Coffee', 500, 'INR', current_date, 'Other', 'equal', null, jsonb_build_array(jsonb_build_object('user_id', a, 'amount', 500)), jsonb_build_array(jsonb_build_object('user_id', a, 'amount', 500)));
+  begin perform create_invite_link(pg1); assert false; exception when others then assert sqlerrm like '%can''t be shared%', sqlerrm; end;
+  begin perform add_shadow_member(pg1, 'Zed2'); assert false; exception when others then assert sqlerrm like '%can''t be shared%', sqlerrm; end;
+  begin update groups set type = 'Travel' where id = pg1; assert false; exception when others then assert sqlerrm like '%Personal%', sqlerrm; end;
+  perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+  select count(*) into n from groups where id = pg1; assert n = 0, 'nobody else can see a personal space';
+  reset role;
   -- account deletion (service-role functions: run as postgres)
   reset role;
   assert array_length(account_blockers(a), 1) >= 1, 'owner of a group with other members is blocked';
