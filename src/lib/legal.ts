@@ -2,8 +2,6 @@
 export const LEGAL = {
   operator: "Splitequal",
   email: "support@splitequal.com",
-  governingLaw: "Laws of India",
-  jurisdiction: "Delhi, India",
   dataRegion: "India (Mumbai)",
   emailProvider: "Resend",
   backupDays: "30",

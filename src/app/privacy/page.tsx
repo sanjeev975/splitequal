@@ -21,6 +21,6 @@ const sections: Section[] = [
   ["Security", "We use encrypted connections, per-user access rules in the database, limits on abusive use, and we keep secret keys on the server only. No system is perfectly secure. If a breach affects you we will tell you and the authorities as the law requires."],
   ["Children", "Splitequal is not for anyone under 18. If you believe a child has an account, contact us and we will delete it."],
   ["International processing", "Our providers may process data in other countries. Where required we rely on appropriate safeguards."],
-  ["Contact and grievances", `Questions, requests or complaints: ${L.email}. Grievance Officer: ${L.grievance}. Postal address: ${L.address}. We may update this policy; the date at the top shows the latest version, and we will give notice of significant changes.`],
+  ["Contact and grievances", `Questions, requests or complaints: ${L.email}. We may update this policy; the date at the top shows the latest version, and we will give notice of significant changes.`],
 ];
 export default function Privacy() { return <LegalPage title="Privacy Policy" sections={sections} />; }
