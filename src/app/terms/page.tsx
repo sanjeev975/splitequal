@@ -11,7 +11,7 @@ const sections: Section[] = [
   ["Accuracy", "We calculate splits in whole paise/cents with documented rounding rules, but you are responsible for checking amounts before you pay or rely on them, and for keeping your own records if you need them."],
   ["Availability and changes", "We work to keep Splitequal running but provide it “as is”, without a promise of uninterrupted or error-free service. We may change or remove features and set fair-use limits."],
   ["Ending your use", "You can delete your account at any time in Profile. We may suspend or close accounts that break these terms or put others at risk. Expenses shared with others may remain in their groups as described in the Privacy Policy."],
-  ["Liability", "To the extent the law allows, we are not liable for indirect or consequential losses, lost profits, or losses from payments or disputes between users. Our total liability for any claim is limited to [amount, to be set with your lawyer]. Nothing here limits liability that cannot be limited by law."],
+  ["Liability", "To the extent the law allows, we are not liable for indirect or consequential losses, lost profits, or losses from payments or disputes between users. Our total liability for any claim is limited to the fees you have paid us, if any, in the 12 months preceding the claim. Nothing here limits liability that cannot be limited by law."],
   ["Changes and contact", `We may update these terms; the date above shows the latest version and we will give notice of material changes.`],
 ];
 export default function Terms() { return <LegalPage title="Terms of Service" sections={sections} />; }

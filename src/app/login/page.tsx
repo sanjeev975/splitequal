@@ -11,6 +11,8 @@ export default function Login() {
   const r = useRouter(); const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState(""); const [password, setPw] = useState(""); const [name, setName] = useState(""); const [username, setUsername] = useState("");
   const [msg, setMsg] = useState(""); const [note, setNote] = useState(""); const [busy, setBusy] = useState(false); const [uHint, setUHint] = useState("");
+  const [agreed, setAgreed] = useState(false);
+  const [marketing, setMarketing] = useState(false);
   const sb = supabaseBrowser(); const [captcha, setCaptcha] = useState<string | null>(null); const [resetN, setResetN] = useState(0);
   const [sent, setSent] = useState<{ email: string; kind: "new" | "unconfirmed" } | null>(null); const [cooldown, setCooldown] = useState(0); const [resendBusy, setResendBusy] = useState(false);
   const next = () => safeNext(new URLSearchParams(location.search).get("next"));
@@ -24,6 +26,7 @@ export default function Login() {
   }
   async function go(e: React.FormEvent) {
     e.preventDefault(); setMsg(""); if (turnstileEnabled && !captcha) return setMsg("Please complete the security check below."); setBusy(true);
+    if (mode === "up" && !agreed) { setBusy(false); return setMsg("You must agree to the Terms and Privacy Policy."); }
     if (mode === "up") { const { data: ok } = await sb.rpc("username_available", { p_username: username }); if (!ok) { setBusy(false); return setMsg("That username is taken or invalid."); } }
     const { data, error } = mode === "in" ? await sb.auth.signInWithPassword({ email, password, options: { captchaToken: captcha ?? undefined } })
       : await sb.auth.signUp({ email, password, options: { captchaToken: captcha ?? undefined, data: { display_name: name, username }, emailRedirectTo: callback() } });
@@ -33,7 +36,18 @@ export default function Login() {
       return setMsg(/captcha/i.test(error.message) ? "Security check failed. Please try again." : /database error/i.test(error.message) ? "That username or email can't be used. Try another." : /already registered/i.test(error.message) ? "An account with this email already exists. Sign in or reset your password." : error.message);
     }
     if (mode === "up" && data.user?.identities?.length === 0) return setMsg("An account with this email already exists. Sign in or reset your password.");
-    if (mode === "up" && !data.session) { setPw(""); setNote(""); setSent({ email, kind: "new" }); setCooldown(60); return; } // confirmation email is on its way
+    if (mode === "up" && !data.session) {
+      if (data.user) {
+        const consents = [
+          { user_id: data.user.id, consent_type: "terms_privacy", policy_version: "1.0", signup_channel: "web" }
+        ];
+        if (marketing) {
+          consents.push({ user_id: data.user.id, consent_type: "marketing", policy_version: "1.0", signup_channel: "web" });
+        }
+        await sb.from("user_consents").insert(consents);
+      }
+      setPw(""); setNote(""); setSent({ email, kind: "new" }); setCooldown(60); return;
+    } // confirmation email is on its way
     r.push(next()); r.refresh();
   }
   async function resend() {
@@ -64,7 +78,22 @@ export default function Login() {
       {msg && <p role="alert" className="text-danger text-sm">{msg}</p>}
       <Turnstile onToken={setCaptcha} resetKey={resetN} />
       <button className="btn w-full" disabled={busy}>{busy ? "Please wait…" : mode === "in" ? "Sign in" : "Sign up"}</button>
-      {mode === "up" && <p className="text-xs">By signing up you agree to the <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>}
+      {mode === "up" && (
+        <div className="space-y-2 text-sm text-muted">
+          <div className="rounded border p-3 text-xs">
+            <p className="mb-2 font-semibold text-foreground">Data Notice</p>
+            <p>We collect your email, display name, and currency preferences to manage your group expenses. Your data is stored securely in India (Mumbai) and is never sold.</p>
+          </div>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="h-4 w-4" />
+            <span>I agree to the <Link href="/terms" className="underline" target="_blank">Terms</Link> and <Link href="/privacy" className="underline" target="_blank">Privacy Policy</Link>.</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} className="h-4 w-4" />
+            <span>I consent to receive occasional service updates.</span>
+          </label>
+        </div>
+      )}
       <button type="button" className="text-sm underline block" onClick={() => setMode(mode === "in" ? "up" : "in")}>{mode === "in" ? "New here? Create an account" : "Have an account? Sign in"}</button>
       {mode === "in" && <Link href="/forgot" className="text-sm underline block">Forgot password?</Link>}
     </form><LegalFooter /></main>);
