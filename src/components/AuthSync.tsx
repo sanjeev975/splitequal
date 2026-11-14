@@ -14,14 +14,16 @@ export function AuthSync() {
     const sb = supabaseBrowser();
 
     // Listen for auth state changes (e.g., signIn, signOut in another tab)
-    const { data: { subscription } } = sb.auth.onAuthStateChange(() => {
-      router.refresh();
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        window.location.href = "/";
+      }
     });
 
     // Listen for storage events (when other tabs change localStorage)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key?.startsWith("sb-")) {
-        router.refresh();
+        window.location.reload();
       }
     };
 
