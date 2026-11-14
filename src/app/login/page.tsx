@@ -17,7 +17,7 @@ export default function Login() {
   const [sent, setSent] = useState<{ email: string; kind: "new" | "unconfirmed" } | null>(null); const [cooldown, setCooldown] = useState(0); const [resendBusy, setResendBusy] = useState(false);
   const next = () => safeNext(new URLSearchParams(location.search).get("next"));
   const callback = () => `${location.origin}/auth/callback?next=${encodeURIComponent(next())}`; // keeps invite links working through the email
-  useEffect(() => { const sp = new URLSearchParams(location.search); if (sp.get("mode") === "up") setMode("up"); if (sp.get("next")) setNote("Please sign in or create an account to continue where you left off."); if (sp.get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. If you were confirming your email, try signing in. Otherwise request a new link."); }, []);
+  useEffect(() => { const sp = new URLSearchParams(location.search); if (sp.get("mode") === "up") setMode("up"); if (sp.get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. If you were confirming your email, try signing in. Otherwise request a new link."); }, []);
   useEffect(() => { if (cooldown <= 0) return; const t = setTimeout(() => setCooldown((c) => c - 1), 1000); return () => clearTimeout(t); }, [cooldown]);
   async function checkUser() {
     if (!username) return setUHint("");
@@ -48,7 +48,7 @@ export default function Login() {
       }
       setPw(""); setNote(""); setSent({ email, kind: "new" }); setCooldown(60); return;
     } // confirmation email is on its way
-    r.push(next()); r.refresh();
+    window.location.href = next();
   }
   async function resend() {
     if (!sent || cooldown > 0 || resendBusy) return; setResendBusy(true); setMsg(""); setNote("");
