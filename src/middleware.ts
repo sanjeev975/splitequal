@@ -5,7 +5,7 @@ type CookieToSet = { name: string; value: string; options?: any }; // explicit: 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const alias = aliasFor(path); if (alias) return NextResponse.redirect(new URL(alias, req.url)); // /signup -> /login?mode=up (signed-in users are then bounced to the dashboard)
-  const kind = kindOf(path); if (kind === "public") return NextResponse.next(); // landing, join, guest, legal pages...: no auth call at all
+  const kind = kindOf(path);
   if (!hasAuthCookie(req.cookies.getAll().map((c) => c.name))) { // no session cookie: certainly signed out, skip the Supabase round-trip (keeps the landing page fast for new visitors)
     const to = redirectFor(kind, path, req.nextUrl.search, false); return to ? NextResponse.redirect(new URL(to, req.url)) : NextResponse.next();
   }

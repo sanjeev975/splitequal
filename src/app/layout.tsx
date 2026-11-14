@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { PwaRegister } from "@/components/PwaRegister";
+import { AuthSync } from "@/components/AuthSync";
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" }); // self-hosted by Next at build time
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 export const metadata: Metadata = {
@@ -15,5 +16,5 @@ export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme
 const THEME_INIT = `try{var t=localStorage.getItem("splitlol.theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 export default function Root({ children }: { children: React.ReactNode }) {
   return (<html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}><head><script dangerouslySetInnerHTML={{ __html: THEME_INIT }} /></head>
-    <body className="min-h-screen">{children}<PwaRegister /></body></html>);
+    <body className="min-h-screen">{children}<AuthSync /><PwaRegister /></body></html>);
 }
