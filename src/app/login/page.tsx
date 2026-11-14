@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -15,6 +16,7 @@ export default function Login() {
   const [marketing, setMarketing] = useState(false);
   const sb = supabaseBrowser(); const [captcha, setCaptcha] = useState<string | null>(null); const [resetN, setResetN] = useState(0);
   const [sent, setSent] = useState<{ email: string; kind: "new" | "unconfirmed" } | null>(null); const [cooldown, setCooldown] = useState(0); const [resendBusy, setResendBusy] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const next = () => safeNext(new URLSearchParams(location.search).get("next"));
   const callback = () => `${location.origin}/auth/callback?next=${encodeURIComponent(next())}`; // keeps invite links working through the email
   useEffect(() => { const sp = new URLSearchParams(location.search); if (sp.get("mode") === "up") setMode("up"); if (sp.get("error") === "link") setMsg("That link has expired, was already used, or was opened in a different browser. If you were confirming your email, try signing in. Otherwise request a new link."); }, []);
@@ -73,7 +75,12 @@ export default function Login() {
       {mode === "up" && <><input className="field" placeholder="Display name" required value={name} onChange={(e) => setName(e.target.value)} aria-label="Display name" />
         <input className="field" placeholder="Username" required value={username} onChange={(e) => setUsername(e.target.value)} onBlur={checkUser} aria-label="Username" />{uHint && <p className="text-sm" role="status">{uHint}</p>}</>}
       <input className="field" type="email" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email" />
-      <input className="field" type="password" placeholder="Password (min 8)" minLength={8} required value={password} onChange={(e) => setPw(e.target.value)} aria-label="Password" />
+      <div className="relative">
+        <input className="field pr-10" type={showPw ? "text" : "password"} placeholder="Password (min 8)" minLength={8} required value={password} onChange={(e) => setPw(e.target.value)} aria-label="Password" />
+        <button type="button" className="absolute right-3 top-2.5 text-muted hover:text-foreground" onClick={() => setShowPw(!showPw)}>
+          {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </div>
       {note && <p className="text-sm text-muted">{note}</p>}
       {msg && <p role="alert" className="text-danger text-sm">{msg}</p>}
       <Turnstile onToken={setCaptcha} resetKey={resetN} />
