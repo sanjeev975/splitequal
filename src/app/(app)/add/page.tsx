@@ -3,7 +3,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { membersByGroup } from "@/lib/members";
 import { PERSONAL } from "@/lib/quickAdd";
 import { QuickAdd } from "@/components/QuickAdd";
-export const metadata = { title: "Add expense · Splitequal" };
+export const metadata = { title: "Add expense · SplitLoL" };
 export default async function AddExpensePage({ searchParams }: { searchParams: Promise<{ g?: string }> }) {
   const { g } = await searchParams; const sb = await supabaseServer();
   const [{ data: { user } }, { data: groups }, { data: mem }] = await Promise.all([

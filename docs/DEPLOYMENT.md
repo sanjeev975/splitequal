@@ -1,11 +1,11 @@
-# Running Splitequal safely: environments, releases, backups, email, monitoring
+# Running SplitLoL safely: environments, releases, backups, email, monitoring
 
 ## 1. Three environments (never test on production data)
 | | Supabase project | Vercel | Site URL / redirect URLs |
 |---|---|---|---|
 | Local | `npx supabase start` (Docker) or a personal dev project | `npm run dev` | http://localhost:3000 |
-| Staging | project **splitequal-staging** (Mumbai) | Preview deployments | your preview URL |
-| Production | project **splitequal-prod** (Mumbai) | Production | https://your-domain |
+| Staging | project **splitlol-staging** (Mumbai) | Preview deployments | your preview URL |
+| Production | project **splitlol-prod** (Mumbai) | Production | https://your-domain |
 
 In Vercel → Settings → Environment Variables set the **Preview** values from staging and the **Production** values from prod:
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` (**secret, no NEXT_PUBLIC_ prefix**), optional `SENTRY_INGEST_HOST`. Functions already run in Mumbai (`vercel.json`). In each Supabase project: Authentication → URL Configuration → Site URL + Redirect URLs for that environment only.
@@ -24,7 +24,7 @@ In Vercel → Settings → Environment Variables set the **Preview** values from
 
 ## 4. Email (the built-in sender is rate-limited and lands in spam)
 1. Pick a provider (Resend, Postmark, Brevo, Amazon SES) and verify your domain: add the **SPF, DKIM and DMARC** DNS records it gives you.
-2. Supabase → Authentication → SMTP Settings: host, port, user, password, sender `no-reply@your-domain`, sender name `Splitequal`.
+2. Supabase → Authentication → SMTP Settings: host, port, user, password, sender `no-reply@your-domain`, sender name `SplitLoL`.
 3. Authentication → Email Templates: paste `supabase/templates/confirm.html` (Confirm signup) and `recovery.html` (Reset password).
 4. Turn **Confirm email ON**. Test sign-up and password reset to Gmail and an Indian provider (check spam).
 

@@ -24,5 +24,5 @@ export async function GET(req: Request) {
     expenses_you_took_part_in: mine.map((e: any) => ({ group: e.groups?.name, title: e.title, date: e.expense_date, category: e.category, notes: e.notes, total: dec(e.amount_minor), currency: e.currency, added_by: nm(e.created_by), paid: lines(e.expense_payments), shares: lines(e.expense_splits) })),
     settlements: (settlements.data ?? []).map((s: any) => ({ group: s.groups?.name, from: nm(s.from_user), to: nm(s.to_user), amount: dec(s.amount_minor), currency: s.currency, status: s.status, note: s.note, reason: s.resolution_note, date: s.created_at })),
     notifications: notifications.data ?? [] };
-  return new NextResponse(JSON.stringify(out, null, 2), { headers: { "Content-Type": "application/json", "Content-Disposition": `attachment; filename="splitequal-data-${new Date().toISOString().slice(0, 10)}.json"`, "Cache-Control": "no-store" } });
+  return new NextResponse(JSON.stringify(out, null, 2), { headers: { "Content-Type": "application/json", "Content-Disposition": `attachment; filename="splitlol-data-${new Date().toISOString().slice(0, 10)}.json"`, "Cache-Control": "no-store" } });
 }

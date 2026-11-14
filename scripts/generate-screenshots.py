@@ -17,7 +17,7 @@ def stat(img, d, x, y, w, h, label, val, col):
     card(img, (x, y, x + w, y + h), inset=True, r=18); d.text((x + 20, y + 14), label, font=f(SANS, 18), fill=INK); d.text((x + 20, y + h - 52), val, font=f(MONO, 32), fill=col)
 def make(path, W, H, narrow):
     img = Image.new("RGBA", (W, H), IVORY); d = ImageDraw.Draw(img); m = 40 if narrow else 80
-    d.rectangle((0, 0, W, 72), fill=PAPER); d.line((0, 72, W, 72), fill=EDGE, width=2); logo(d, m, 18, 36); d.text((m + 50, 20), "Splitequal", font=f(SERIF, 28), fill=NAVY)
+    d.rectangle((0, 0, W, 72), fill=PAPER); d.line((0, 72, W, 72), fill=EDGE, width=2); logo(d, m, 18, 36); d.text((m + 50, 20), "SplitLoL", font=f(SERIF, 28), fill=NAVY)
     if not narrow: d.text((W - 420, 26), "Dashboard     Groups     Profile", font=f(SANS, 20), fill=INK)
     d.text((m, 100), "Dashboard", font=f(SERIF, 44), fill=INK)
     stats = [("You owe (INR)", "₹1,250.00", CORAL), ("You are owed (INR)", "₹3,400.00", EMER), ("Net (INR)", "₹2,150.00", INK)]

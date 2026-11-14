@@ -31,7 +31,7 @@ export default async function Dashboard() {
   const month: Record<string, number> = {};
   for (const e of ex ?? []) for (const s of (e as any).expense_splits) if (s.user_id === user.id) { const k = `${(e as any).currency} ${(e as any).expense_date.slice(0, 7)}`; month[k] = (month[k] ?? 0) + Number(s.amount_minor); }
   const mrows = Object.entries(month).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6); const mmax = Math.max(1, ...mrows.map((r) => r[1]));
-  if (!groups?.length) return <div className="card space-y-3"><h1 className="font-display text-3xl font-bold">Welcome to Splitequal</h1><p>No groups yet — create one to start sharing expenses.</p><Link className="btn btn-coral inline-block" href="/groups">Create a group</Link></div>;
+  if (!groups?.length) return <div className="card space-y-3"><h1 className="font-display text-3xl font-bold">Welcome to SplitLoL</h1><p>No groups yet — create one to start sharing expenses.</p><Link className="btn btn-coral inline-block" href="/groups">Create a group</Link></div>;
   return (<div className="space-y-4">
     <div className="flex items-center justify-between gap-2"><h1 className="font-display text-2xl font-bold">Dashboard</h1><Link className="btn btn-coral btn-sm" href="/add">+ Add expense</Link></div>
     {(ex ?? []).length === 0 && <p className="card text-sm">No expenses yet. Tap Add to record your first one.</p>}

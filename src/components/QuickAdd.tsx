@@ -5,7 +5,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { AddExpense } from "./ExpenseForm";
 import { NEW_GROUP, PERSONAL, defaultSelection } from "@/lib/quickAdd";
 type G = { id: string; name: string; type: string; base_currency: string }; type M = { user_id: string; name: string };
-const KEY = "splitequal.quickadd.group"; const CUR = ["INR", "USD", "GBP", "EUR", "AED", "CAD", "AUD"];
+const KEY = "splitlol.quickadd.group"; const CUR = ["INR", "USD", "GBP", "EUR", "AED", "CAD", "AUD"];
 const TYPES = ["Travel", "Rent and roommates", "Household", "Couples and family", "Dining", "Events", "Shopping", "Custom"];
 /** The "Add" tab: pick where the expense goes (just me / a group / a brand-new group) and fill in the form, all on one screen. */
 export function QuickAdd({ groups: g0, membersByGroup: m0, me, initial }: { groups: G[]; membersByGroup: Record<string, M[]>; me: string; initial: string }) {

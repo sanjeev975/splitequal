@@ -22,6 +22,6 @@ describe("payment links", () => {
     expect(normalizeUpi("upi://pay?pa=Asha@okaxis&pn=Asha&am=10")).toBe("asha@okaxis");
   });
   it("builds the link from the raw ID at click time", () => {
-    expect(upiLink({ vpa: "9548967357@ibl", name: "Ravi Kumar", amountMinor: 25000, note: "Splitequal settle-up" })).toBe("upi://pay?pa=9548967357@ibl&pn=Ravi%20Kumar&am=250.00&cu=INR&tn=Splitequal%20settle-up");
+    expect(upiLink({ vpa: "9548967357@ibl", name: "Ravi Kumar", amountMinor: 25000, note: "SplitLoL settle-up" })).toBe("upi://pay?pa=9548967357@ibl&pn=Ravi%20Kumar&am=250.00&cu=INR&tn=SplitLoL%20settle-up");
   });
 });

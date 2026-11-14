@@ -14,9 +14,9 @@ export default function GuestHome() {
     const members = people.map((n) => ({ id: newId(), name: n })); const g: LocalGroup = { id: newId(), name: name.trim().slice(0, 80), type, currency: cur, me: members[0].id, members, expenses: [], settlements: [] };
     update((gs) => [g, ...gs]); r.push(`/guest/${g.id}`);
   }
-  function exportBackup() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(groups ?? [], null, 2)], { type: "application/json" })); a.download = "splitequal-guest-backup.json"; a.click(); URL.revokeObjectURL(a.href); }
+  function exportBackup() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(groups ?? [], null, 2)], { type: "application/json" })); a.download = "splitlol-guest-backup.json"; a.click(); URL.revokeObjectURL(a.href); }
   async function importBackup(f?: File) {
-    if (!f) return; setMsg(""); try { const v = JSON.parse(await f.text()); const list = (Array.isArray(v) ? v : []).map(cleanGroup); if (!list.length || list.includes(null)) return setMsg("That file isn't a valid Splitequal backup.");
+    if (!f) return; setMsg(""); try { const v = JSON.parse(await f.text()); const list = (Array.isArray(v) ? v : []).map(cleanGroup); if (!list.length || list.includes(null)) return setMsg("That file isn't a valid SplitLoL backup.");
       update((gs) => { const have = new Set(gs.map((g) => g.id)); return [...(list as LocalGroup[]).filter((g) => !have.has(g.id)), ...gs]; }); setMsg("Backup restored."); } catch { setMsg("Couldn't read that file."); }
   }
   return (<div className="space-y-3.5"><h1 className="font-display text-3xl font-bold">Your guest groups</h1>

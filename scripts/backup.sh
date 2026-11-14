@@ -4,6 +4,6 @@
 # WARNING: includes the auth schema (password hashes, emails). Encrypt it and store it off-platform. Files in Storage (receipts/avatars) are NOT included.
 set -euo pipefail
 : "${SUPABASE_DB_URL:?Set SUPABASE_DB_URL (Supabase → Project Settings → Database → Connection string)}"
-mkdir -p backups; out="backups/splitequal-$(date +%Y%m%d-%H%M%S).sql.gz"
+mkdir -p backups; out="backups/splitlol-$(date +%Y%m%d-%H%M%S).sql.gz"
 pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --schema=public --schema=auth | gzip > "$out"; chmod 600 "$out"
 echo "Wrote $out ($(du -h "$out" | cut -f1)). Encrypt before uploading anywhere, e.g.: gpg -c $out"

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 /** CONTRACT for Guest Mode: save local groups as JSON under this localStorage key. Adjust readLocalGroups() if your Guest Mode stores them differently. */
-export const GUEST_STORAGE_KEY = "splitequal.guest.groups";
+export const GUEST_STORAGE_KEY = "splitlol.guest.groups";
 export interface LocalExpense { id?: string; title: string; amountMinor: number; date?: string; category?: string; notes?: string; method?: string; paidBy: { member: string; amount: number }[]; splits: { member: string; amount: number }[] }
 export interface LocalGroup { id: string; name: string; type?: string; currency: string; me?: string; members: { id: string; name: string }[]; expenses?: LocalExpense[]; settlements?: { id: string; from: string; to: string; amountMinor: number; date?: string }[] }
 export function toPayload(g: LocalGroup) {

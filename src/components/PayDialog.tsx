@@ -10,7 +10,7 @@ export function PayDialog({ groupId, cur, to, toName, amount, me, nonce, onClose
   const [h, setH] = useState<H | null | undefined>(undefined); const [note, setNote] = useState(""); const [busy, setBusy] = useState(false); const [err, setErr] = useState(""); const [opened, setOpened] = useState(false); const [copied, setCopied] = useState(false);
   useEffect(() => { sb.from("payment_handles").select("upi_id,venmo_handle").eq("user_id", to).maybeSingle().then(({ data }) => setH(data)); }, [sb, to]);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [onClose]);
-  const memo = "Splitequal settle-up";
+  const memo = "SplitLoL settle-up";
   const upi = cur === "INR" && h?.upi_id ? upiLink({ vpa: h.upi_id, name: toName, amountMinor: amount, note: memo }) : null;
   const venmo = cur === "USD" && h?.venmo_handle ? venmoLink({ handle: h.venmo_handle, amountMinor: amount, note: memo }) : null;
   const desktop = typeof navigator !== "undefined" && !/android|iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -32,7 +32,7 @@ export function PayDialog({ groupId, cur, to, toName, amount, me, nonce, onClose
       <div className="inset space-y-2"><p className="font-semibold">Step 2 — Tell {toName} you've paid</p>
         <input className="field" maxLength={200} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} aria-label="Note" />
         <button className="btn btn-coral w-full" onClick={record} disabled={busy}>{busy ? "Recording…" : opened ? "I've paid — record it" : "I paid another way — record it"}</button>
-        <p className="text-xs">Splitequal doesn't process or verify payments. This records that you say you paid; {toName} confirms receipt before balances change.</p></div>
+        <p className="text-xs">SplitLoL doesn't process or verify payments. This records that you say you paid; {toName} confirms receipt before balances change.</p></div>
       {err && <p role="alert" className="text-danger text-sm">{err}</p>}
       <button className="underline text-sm" onClick={onClose}>Close</button></div></div>);
 }

@@ -1,4 +1,4 @@
-# Pure-Python (no dependencies) icon generator from the Splitequal logo. Run: python3 scripts/generate-icons.py
+# Pure-Python (no dependencies) icon generator from the SplitLoL logo. Run: python3 scripts/generate-icons.py
 import struct, zlib
 NAVY = (44, 114, 228); CORAL = (255, 255, 255); LAV = (207, 227, 255); IVORY = (255, 255, 255)  # brand blue square, white bars
 def rr(px, py, x, y, w, h, r):

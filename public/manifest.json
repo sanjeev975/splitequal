@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Splitequal",
-  "short_name": "Splitequal",
+  "name": "SplitLoL",
+  "short_name": "SplitLoL",
   "description": "Every expense. Fairly shared. Split trips, rent and bills with friends.",
   "start_url": "/dashboard?source=pwa",
   "scope": "/",
