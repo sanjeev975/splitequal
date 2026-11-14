@@ -16,7 +16,7 @@ export function AuthSync() {
     // Listen for auth state changes (e.g., signIn, signOut in another tab)
     const { data: { subscription } } = sb.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
-        router.refresh();
+        window.location.href = "/";
       }
     });
 
