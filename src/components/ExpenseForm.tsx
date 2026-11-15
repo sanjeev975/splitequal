@@ -13,7 +13,7 @@ const money = (n: number) => `${Math.floor(n / 100)}.${String(n % 100).padStart(
 export function AddExpense({ groupId, currency, members, me, edit, onDone, onSave, personal }: { groupId: string; currency: string; members: M[]; me: string; edit?: Edit; onDone?: () => void; onSave?: (e: GuestSave) => void; personal?: boolean }) {
   const r = useRouter(); const sb = supabaseBrowser();
   const [title, setTitle] = useState(edit?.title ?? ""); const [date, setDate] = useState(edit?.date ?? new Date().toISOString().slice(0, 10));
-  const [category, setCategory] = useState(edit?.category ?? "Other"); const [notes, setNotes] = useState(edit?.notes ?? "");
+  const [category, setCategory] = useState(edit?.category ?? ""); const [notes, setNotes] = useState(edit?.notes ?? "");
   const [amount, setAmount] = useState(edit ? money(edit.amountMinor) : ""); const [adj, setAdj] = useState({ tax: "", service: "", tip: "", discount: "" });
   const [multi, setMulti] = useState((edit?.payments.length ?? 0) > 1); const [payer, setPayer] = useState(edit?.payments[0]?.user_id ?? me);
   const [payAmts, setPayAmts] = useState<Record<string, string>>(edit ? Object.fromEntries(edit.payments.map((p) => [p.user_id, money(p.amount)])) : {});

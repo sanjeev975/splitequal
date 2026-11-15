@@ -1,9 +1,9 @@
 @tailwind base; @tailwind components; @tailwind utilities;
 /* DESIGN TOKENS: "Violet & Lime" Fintech-Social System */
 :root {
-  /* Core Palette: Deep Violet base, Electric Purple primary, Lime accent */
-  --bg: 250 245 255; --card: 255 255 255; --fg: 46 16 101; --muted: 107 114 128;
-  --primary: 124 58 237; --on: 255 255 255; --accent: 190 242 100; --good: 34 197 94; --danger: 239 68 68;
+  /* Core Palette: Deep Violet base, Electric Purple primary, Trustworthy Accents */
+  --bg: 250 245 255; --card: 255 255 255; --fg: 30 27 75; --muted: 85 80 120;
+  --primary: 124 58 237; --on: 255 255 255; --accent: 190 242 100; --good: 21 128 61; --danger: 191 16 16;
   --border: 221 214 254; --inset: 245 243 255; --soft: 237 233 254; --soft-fg: 91 33 182; --ring: 124 58 237;
   --chart-4: 124 58 237; --chart-5: 190 242 100; --chart-6: 232 121 249; --chart-7: 34 211 238; --chart-8: 107 114 128;
   color-scheme: light;
@@ -15,16 +15,6 @@
   --border: 71 85 105; --inset: 17 24 39; --soft: 49 46 129; --soft-fg: 221 214 254; --ring: 167 139 250;
   --chart-4: 167 139 250; --chart-5: 163 230 53; --chart-6: 232 179 249; --chart-7: 34 211 238; --chart-8: 156 163 175;
   color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: 17 24 39; --card: 31 41 55; --fg: 243 244 246; --muted: 156 163 175;
-    --primary: 167 139 250; --on: 17 24 39; --accent: 163 230 53; --good: 74 222 128; --danger: 248 113 113;
-    --border: 71 85 105; --inset: 17 24 39; --soft: 49 46 129; --soft-fg: 221 214 254; --ring: 167 139 250;
-    --chart-4: 167 139 250; --chart-5: 163 230 53; --chart-6: 232 179 249; --chart-7: 34 211 238; --chart-8: 156 163 175;
-    color-scheme: dark;
-  }
 }
 
 body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
@@ -39,7 +29,10 @@ body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe
   .btn { @apply inline-flex items-center justify-center min-h-[40px] rounded-full bg-primary px-5 py-2 text-center text-sm font-bold leading-tight text-on transition hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] disabled:opacity-50; }
   .btn-lime { @apply bg-accent text-fg font-bold; }
   .field { @apply min-h-[44px] w-full rounded-2xl border border-border bg-card px-4 py-2 text-sm text-fg placeholder:text-muted focus:border-primary focus:ring-1 focus:ring-primary; }
-  .h-card { @apply font-display text-[15px] font-bold tracking-tight; }
-  /* Ensure main content is always centered and padded on all screen sizes */
-  .page-container { @apply mx-auto max-w-4xl px-4 md:px-8 py-6 w-full; }
+  .h-card { @apply font-display text-[15px] font-bold tracking-tight text-fg; }
+  .h-sec { @apply text-[13px] font-bold uppercase tracking-wider text-fg/80; }
+  .page-container { @apply mx-auto max-w-4xl px-4 md:px-8 py-6 w-full box-border; }
+  .page-bottom-space { @apply pb-[calc(3.5rem+env(safe-area-inset-bottom))]; }
+  .text-good { @apply text-green-700; }
+  .text-accent { @apply text-orange-700; }
 }
