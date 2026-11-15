@@ -36,8 +36,10 @@ body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe
 @layer components {
   .card { @apply rounded-2xl border border-border bg-card p-3.5 shadow-sm md:p-4; }
   .receipt { @apply card font-mono border-dashed border-border; }
-  .btn { @apply inline-flex items-center justify-center min-h-[40px] rounded-full bg-primary px-5 py-2 text-center text-sm font-bold leading-none text-on transition hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] disabled:opacity-50; }
+  .btn { @apply inline-flex items-center justify-center min-h-[40px] rounded-full bg-primary px-5 py-2 text-center text-sm font-bold leading-tight text-on transition hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] disabled:opacity-50; }
   .btn-lime { @apply bg-accent text-fg font-bold; }
   .field { @apply min-h-[44px] w-full rounded-2xl border border-border bg-card px-4 py-2 text-sm text-fg placeholder:text-muted focus:border-primary focus:ring-1 focus:ring-primary; }
   .h-card { @apply font-display text-[15px] font-bold tracking-tight; }
+  /* Ensure main content is always centered and padded on all screen sizes */
+  .page-container { @apply mx-auto max-w-4xl px-4 md:px-8 py-6 w-full; }
 }
