@@ -1,41 +1,148 @@
-# Illustrative store screenshots for the PWA install UI. Replace with real screenshots of your app when you can (same sizes).
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
-IVORY=(251,246,234); PAPER=(241,232,210); NAVY=(20,33,61); CORAL=(240,115,74); EMER=(15,157,107); LAV=(184,169,240); INK=(36,38,43); INSET=(232,223,198); EDGE=(217,204,170)
-D="/usr/share/fonts/truetype/dejavu/"
-def f(n, s): return ImageFont.truetype(D + n, s)
-SERIF, SANS, MONO = "DejaVuSerif-Bold.ttf", "DejaVuSans.ttf", "DejaVuSansMono-Bold.ttf"
-def card(img, box, fill=PAPER, r=24, inset=False):
-    if not inset:
-        sh = Image.new("RGBA", img.size, (0, 0, 0, 0)); x0, y0, x1, y1 = box
-        ImageDraw.Draw(sh).rounded_rectangle((x0, y0 + 10, x1, y1 + 10), r, fill=(20, 33, 61, 80)); img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(12)))
-    ImageDraw.Draw(img).rounded_rectangle(box, r, fill=INSET if inset else fill, outline=EDGE, width=2)
-def logo(d, x, y, s):
-    k = s / 32; d.rounded_rectangle((x, y, x + s, y + s), 9 * k, fill=NAVY)
-    d.rounded_rectangle((x + 6 * k, y + 9 * k, x + 26 * k, y + 14 * k), 2.5 * k, fill=CORAL); d.rounded_rectangle((x + 6 * k, y + 18 * k, x + 26 * k, y + 23 * k), 2.5 * k, fill=LAV)
-    d.rectangle((x + 6 * k, y + 14 * k, x + 26 * k, y + 15.6 * k), fill=IVORY)
-def stat(img, d, x, y, w, h, label, val, col):
-    card(img, (x, y, x + w, y + h), inset=True, r=18); d.text((x + 20, y + 14), label, font=f(SANS, 18), fill=INK); d.text((x + 20, y + h - 52), val, font=f(MONO, 32), fill=col)
-def make(path, W, H, narrow):
-    img = Image.new("RGBA", (W, H), IVORY); d = ImageDraw.Draw(img); m = 40 if narrow else 80
-    d.rectangle((0, 0, W, 72), fill=PAPER); d.line((0, 72, W, 72), fill=EDGE, width=2); logo(d, m, 18, 36); d.text((m + 50, 20), "SplitLoL", font=f(SERIF, 28), fill=NAVY)
-    if not narrow: d.text((W - 420, 26), "Dashboard     Groups     Profile", font=f(SANS, 20), fill=INK)
-    d.text((m, 100), "Dashboard", font=f(SERIF, 44), fill=INK)
-    stats = [("You owe (INR)", "₹1,250.00", CORAL), ("You are owed (INR)", "₹3,400.00", EMER), ("Net (INR)", "₹2,150.00", INK)]
-    if narrow:
-        for i, (l, v, c) in enumerate(stats): stat(img, d, m, 180 + i * 130, W - 2 * m, 110, l, v, c)
-        gy = 580; gb = (m, gy, W - m, gy + 270); rb = (m, gy + 310, W - m, gy + 650)
-    else:
-        w = (W - 2 * m - 48) // 3
-        for i, (l, v, c) in enumerate(stats): stat(img, d, m + i * (w + 24), 180, w, 110, l, v, c)
-        gb = (m, 330, 600, 650); rb = (640, 330, W - m, 650)
-    card(img, gb); gx, gy0 = gb[0] + 28, gb[1] + 24
-    d.text((gx, gy0), "Goa Trip", font=f(SERIF, 32), fill=INK); d.text((gx, gy0 + 48), "Travel · INR · Asha, Ravi, Meera", font=f(SANS, 18), fill=INK)
-    for i, (t, c) in enumerate([("Ravi owes ₹1,000.00", CORAL), ("Meera owes ₹1,000.00", CORAL), ("Asha is owed ₹2,000.00", EMER)]): d.text((gx, gy0 + 100 + i * 40), t, font=f(SANS, 22), fill=c)
-    card(img, rb); rx, ry = rb[0] + 28, rb[1] + 24
-    d.text((rx, ry), "Dinner at the beach shack", font=f(MONO, 24), fill=INK); d.text((rx, ry + 44), "₹3,000.00", font=f(MONO, 36), fill=NAVY)
-    d.text((rx, ry + 100), "17 Oct · Restaurants · equal split", font=f(SANS, 18), fill=INK); d.text((rx, ry + 150), "Paid: Asha ₹3,000.00", font=f(MONO, 20), fill=INK)
-    d.text((rx, ry + 186), "Owes: Ravi ₹1,000.00 · Meera ₹1,000.00", font=f(MONO, 18 if not narrow else 16), fill=INK)
-    d.text((W - m - 230, H - 36), "Illustrative sample data", font=f(SANS, 14), fill=(120, 120, 120))
-    img.convert("RGB").save(path)
-make("public/screenshots/dashboard-wide.png", 1280, 720, False)
-make("public/screenshots/dashboard-narrow.png", 720, 1280, True)
+from PIL import Image, ImageDraw
+import os
+
+os.makedirs("public/screenshots", exist_ok=True)
+
+BG = (250, 245, 255)       # #faf5ff
+CARD = (255, 255, 255)     # #ffffff
+FG = (30, 27, 75)          # #1e1b4b
+MUTED = (120, 110, 160)    # #786ea0
+PRIMARY = (124, 58, 237)   # #7c3aed
+ACCENT = (190, 242, 100)   # #bef264
+BORDER = (221, 214, 254)   # #ddd6fe
+GOOD = (22, 163, 74)       # #16a34a
+DANGER = (220, 38, 38)     # #dc2626
+
+def draw_header(draw, width, title):
+    draw.rectangle([0, 0, width, 70], fill=CARD)
+    draw.line([0, 70, width, 70], fill=BORDER, width=1)
+    draw.text((24, 20), "SplitLoL", fill=PRIMARY, font_size=24)
+    draw.text((140, 26), title, fill=MUTED, font_size=16)
+
+def create_wide_dashboard():
+    w, h = 1280, 720
+    img = Image.new("RGB", (w, h), BG)
+    draw = ImageDraw.Draw(img)
+
+    draw_header(draw, w, "Dashboard")
+
+    card_w, card_h, card_y = 380, 110, 100
+    xs = [24, 432, 840]
+    labels = [("You owe", "₹1,250", DANGER), ("You are owed", "₹3,400", GOOD), ("Net", "+₹2,150", PRIMARY)]
+    for i, (lbl, val, col) in enumerate(labels):
+        x = xs[i]
+        draw.rounded_rectangle([x, card_y, x + card_w, card_y + card_h], radius=16, fill=CARD, outline=BORDER, width=1)
+        draw.text((x + 20, card_y + 16), lbl, fill=MUTED, font_size=14)
+        draw.text((x + 20, card_y + 45), val, fill=col, font_size=28)
+
+    draw.rounded_rectangle([24, 230, 620, 680], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((48, 255), "Groups", fill=FG, font_size=18)
+
+    groups = [("Weekend Goa Trip", "Trip · You're owed ₹2,100"), ("Apartment 402", "Rent · Settled up"), ("Dinner Club", "Dining · You owe ₹450")]
+    gy = 300
+    for gname, gsub in groups:
+        draw.rounded_rectangle([48, gy, 596, gy + 70], radius=12, fill=(245, 243, 255), outline=BORDER, width=1)
+        draw.text((68, gy + 14), gname, fill=FG, font_size=16)
+        draw.text((68, gy + 38), gsub, fill=MUTED, font_size=13)
+        gy += 82
+
+    draw.rounded_rectangle([644, 230, 1256, 680], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((668, 255), "Recent expenses", fill=FG, font_size=18)
+
+    expenses = [("Dinner at Spice Kitchen", "Weekend Goa Trip · Yesterday", "₹3,400"), ("Groceries Supermarket", "Apartment 402 · 3 days ago", "₹1,850"), ("Taxi to Airport", "Weekend Goa Trip · 4 days ago", "₹920"), ("Electricity Bill", "Apartment 402 · 5 days ago", "₹2,400")]
+    ey = 300
+    for title, sub, amt in expenses:
+        draw.line([668, ey, 1232, ey], fill=BORDER, width=1)
+        draw.text((668, ey + 15), title, fill=FG, font_size=15)
+        draw.text((668, ey + 38), sub, fill=MUTED, font_size=12)
+        draw.text((1120, ey + 22), amt, fill=FG, font_size=16)
+        ey += 85
+
+    img.save("public/screenshots/dashboard-wide.png")
+
+def create_narrow_dashboard():
+    w, h = 720, 1280
+    img = Image.new("RGB", (w, h), BG)
+    draw = ImageDraw.Draw(img)
+
+    draw_header(draw, w, "Dashboard")
+
+    card_w, card_h, card_y = 326, 100, 95
+    draw.rounded_rectangle([24, card_y, 24 + card_w, card_y + card_h], radius=16, fill=CARD, outline=BORDER, width=1)
+    draw.text((40, card_y + 14), "You owe", fill=MUTED, font_size=13)
+    draw.text((40, card_y + 38), "₹1,250", fill=DANGER, font_size=24)
+
+    draw.rounded_rectangle([370, card_y, 370 + card_w, card_y + card_h], radius=16, fill=CARD, outline=BORDER, width=1)
+    draw.text((386, card_y + 14), "You are owed", fill=MUTED, font_size=13)
+    draw.text((386, card_y + 38), "₹3,400", fill=GOOD, font_size=24)
+
+    draw.rounded_rectangle([24, 215, 696, 540], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((48, 235), "Your groups", fill=FG, font_size=18)
+
+    groups = [("Weekend Goa Trip", "Trip · You're owed ₹2,100"), ("Apartment 402", "Rent · Settled up"), ("Dinner Club", "Dining · You owe ₹450")]
+    gy = 280
+    for gname, gsub in groups:
+        draw.rounded_rectangle([48, gy, 672, gy + 65], radius=12, fill=(245, 243, 255), outline=BORDER, width=1)
+        draw.text((68, gy + 12), gname, fill=FG, font_size=15)
+        draw.text((68, gy + 34), gsub, fill=MUTED, font_size=12)
+        gy += 75
+
+    draw.rounded_rectangle([24, 560, 696, 1220], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((48, 580), "Recent expenses", fill=FG, font_size=18)
+
+    expenses = [("Dinner at Spice Kitchen", "Goa Trip · Yesterday", "₹3,400"), ("Groceries Supermarket", "Apartment 402 · 3 days ago", "₹1,850"), ("Taxi to Airport", "Goa Trip · 4 days ago", "₹920"), ("Electricity Bill", "Apartment 402 · 5 days ago", "₹2,400")]
+    ey = 625
+    for title, sub, amt in expenses:
+        draw.line([48, ey, 672, ey], fill=BORDER, width=1)
+        draw.text((48, ey + 15), title, fill=FG, font_size=15)
+        draw.text((48, ey + 38), sub, fill=MUTED, font_size=12)
+        draw.text((580, ey + 22), amt, fill=FG, font_size=16)
+        ey += 95
+
+    img.save("public/screenshots/dashboard-narrow.png")
+
+def create_narrow_analytics():
+    w, h = 720, 1280
+    img = Image.new("RGB", (w, h), BG)
+    draw = ImageDraw.Draw(img)
+
+    draw_header(draw, w, "Analytics")
+
+    draw.rounded_rectangle([24, 95, 696, 210], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((48, 115), "Total spent (Last 3 months)", fill=MUTED, font_size=14)
+    draw.text((48, 142), "₹18,550", fill=FG, font_size=32)
+
+    draw.rounded_rectangle([24, 230, 696, 720], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((48, 255), "Spending by category", fill=FG, font_size=18)
+
+    cats = [("Groceries", "₹6,800", "36%", PRIMARY), ("Rent", "₹5,000", "27%", (167, 139, 250)), ("Dining", "₹3,950", "21%", (34, 211, 238)), ("Transport", "₹2,800", "15%", ACCENT)]
+    cy = 300
+    for cname, camt, cpct, ccol in cats:
+        draw.rounded_rectangle([48, cy, 672, cy + 85], radius=12, fill=(245, 243, 255), outline=BORDER, width=1)
+        draw.ellipse([68, cy + 22, 84, cy + 38], fill=ccol)
+        draw.text((98, cy + 20), cname, fill=FG, font_size=16)
+        draw.text((98, cy + 42), f"{cpct} of total", fill=MUTED, font_size=13)
+        draw.text((580, cy + 30), camt, fill=FG, font_size=16)
+        cy += 98
+
+    draw.rounded_rectangle([24, 740, 696, 1220], radius=20, fill=CARD, outline=BORDER, width=1)
+    draw.text((48, 765), "Monthly spending trend", fill=FG, font_size=18)
+
+    months = [("Sep 2026", "₹5,200"), ("Oct 2026", "₹7,100"), ("Nov 2026", "₹6,250")]
+    my = 820
+    for mname, mamt in months:
+        draw.line([48, my, 672, my], fill=BORDER, width=1)
+        draw.text((48, my + 18), mname, fill=FG, font_size=15)
+        draw.text((570, my + 18), mamt, fill=FG, font_size=16)
+        draw.rounded_rectangle([48, my + 50, 600, my + 64], radius=7, fill=(237, 233, 254))
+        bar_w = int(552 * (int(mamt.replace("₹", "").replace(",", "")) / 8000))
+        draw.rounded_rectangle([48, my + 50, 48 + bar_w, my + 64], radius=7, fill=PRIMARY)
+        my += 105
+
+    img.save("public/screenshots/analytics-narrow.png")
+
+if __name__ == "__main__":
+    create_wide_dashboard()
+    create_narrow_dashboard()
+    create_narrow_analytics()
+    print("Successfully generated all screenshots!")

@@ -1,6 +1,6 @@
 # Pure-Python (no dependencies) icon generator from the SplitLoL logo. Run: python3 scripts/generate-icons.py
 import struct, zlib
-NAVY = (44, 114, 228); CORAL = (255, 255, 255); LAV = (207, 227, 255); IVORY = (255, 255, 255)  # brand blue square, white bars
+VIOLET = (124, 58, 237); CORAL = (255, 255, 255); LAV = (237, 233, 254); IVORY = (255, 255, 255)
 def rr(px, py, x, y, w, h, r):
     if px < x or px > x + w or py < y or py > y + h: return False
     cx = min(max(px, x + r), x + w - r); cy = min(max(py, y + r), y + h - r)
@@ -10,7 +10,7 @@ def color(u, v, opaque):
     if rr(u, v, 6, 9, 20, 5, 2.5): return CORAL + (255,)
     if rr(u, v, 6, 18, 20, 5, 2.5): return LAV + (255,)
     if 6 <= u <= 26 and 15.2 <= v <= 16.8: return IVORY + (255,)
-    return NAVY + (255,)
+    return VIOLET + (255,)
 def make(path, size, scale, opaque):
     rows = []
     for py in range(size):
@@ -29,5 +29,5 @@ def make(path, size, scale, opaque):
     open(path, "wb").write(png)
 make("public/icons/icon-192.png", 192, 1.0, False)
 make("public/icons/icon-512.png", 512, 1.0, False)
-make("public/icons/maskable-512.png", 512, 0.62, True)   # content inside the 80% safe zone, full-bleed background
-make("public/icons/apple-touch-icon.png", 180, 0.8, True) # iOS applies its own rounded corners
+make("public/icons/maskable-512.png", 512, 0.62, True)
+make("public/icons/apple-touch-icon.png", 180, 0.8, True)

@@ -7,8 +7,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f6f8fb",
-  "theme_color": "#2c72e4",
+  "background_color": "#fbfbff",
+  "theme_color": "#7c3aed",
   "lang": "en",
   "categories": [
     "finance",
@@ -73,14 +73,21 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Dashboard showing what you owe and are owed"
+      "label": "Dashboard overview with balances and expenses"
     },
     {
       "src": "/screenshots/dashboard-narrow.png",
       "sizes": "720x1280",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Group balances and a shared expense on mobile"
+      "label": "Mobile dashboard view"
+    },
+    {
+      "src": "/screenshots/analytics-narrow.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Analytics and spending breakdown on mobile"
     }
   ]
 }

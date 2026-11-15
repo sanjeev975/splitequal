@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "SplitLoL", statusBarStyle: "default" },
   icons: { icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }, { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
 };
-export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f6f8fb" }, { media: "(prefers-color-scheme: dark)", color: "#171717" }], width: "device-width", initialScale: 1, viewportFit: "cover" };
+export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#faf5ff" }, { media: "(prefers-color-scheme: dark)", color: "#111827" }], width: "device-width", initialScale: 1, viewportFit: "cover" };
 // Applies the saved Light/Dark choice before first paint so there is no flash. (No saved choice = follow the device.)
 const THEME_INIT = `try{var t=localStorage.getItem("splitlol.theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 export default function Root({ children }: { children: React.ReactNode }) {
