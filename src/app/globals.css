@@ -17,6 +17,16 @@
   color-scheme: dark;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: 17 24 39; --card: 31 41 55; --fg: 243 244 246; --muted: 156 163 175;
+    --primary: 167 139 250; --on: 17 24 39; --accent: 163 230 53; --good: 74 222 128; --danger: 248 113 113;
+    --border: 71 85 105; --inset: 17 24 39; --soft: 49 46 129; --soft-fg: 221 214 254; --ring: 167 139 250;
+    --chart-4: 167 139 250; --chart-5: 163 230 53; --chart-6: 232 179 249; --chart-7: 34 211 238; --chart-8: 156 163 175;
+    color-scheme: dark;
+  }
+}
+
 body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
 :focus-visible { outline: 3px solid rgb(var(--ring)); outline-offset: 2px; }
 ::selection { background: rgb(var(--accent) / 0.3); }

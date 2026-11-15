@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "@/components/DashboardClient";
-import { motion } from "framer-motion";
-import { STAGGER } from "@/lib/motion";
 import { supabaseServer } from "@/lib/supabase/server";
 import { netPositions } from "@/lib/money/balances";
 import { fmt } from "@/lib/format";
@@ -40,34 +38,34 @@ export default async function Dashboard() {
   return (
     <DashboardClient>
       <div className="space-y-4">
-        <motion.div variants={STAGGER.item} className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2">
           <h1 className="font-display text-2xl font-bold">Dashboard</h1>
-          <Link className="btn btn-coral btn-sm" href="/add">+ Add expense</Link>
-        </motion.div>
+          <Link className="btn btn-lime btn-sm" href="/add">+ Add expense</Link>
+        </div>
 
         {(ex ?? []).length === 0 && (
-          <motion.p variants={STAGGER.item} className="card text-sm">No expenses yet. Tap Add to record your first one.</motion.p>
+          <p className="card text-sm">No expenses yet. Tap Add to record your first one.</p>
         )}
 
         {Object.entries(tot).filter(([, t]) => t.owe > 0 || t.owed > 0).map(([cur, t]) => (
-          <motion.section key={cur} variants={STAGGER.item} aria-label={`${cur} summary`} className="no-scrollbar -mx-3 flex snap-x gap-2 overflow-x-auto px-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+          <section key={cur} aria-label={`${cur} summary`} className="no-scrollbar -mx-3 flex snap-x gap-2 overflow-x-auto px-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
             {[["You owe", fmt(t.owe, cur), "text-accent"], ["You are owed", fmt(t.owed, cur), "text-good"], ["Net", `${t.owed - t.owe < 0 ? "−" : ""}${fmt(Math.abs(t.owed - t.owe), cur)}`, ""]].map(([l, v, c]) => (
               <div key={l} className="inset min-w-[8.5rem] flex-1 snap-start">
                 <p className="text-xs text-muted">{l} <span className="chip !px-1.5 !py-0">{cur}</span></p>
                 <p className={`font-mono text-lg font-bold ${c}`}>{v}</p>
               </div>
             ))}
-          </motion.section>
+          </section>
         ))}
 
-        <motion.section variants={STAGGER.item}>
+        <section>
           <h2 className="h-sec mb-1.5">Groups</h2>
           <div className="flex flex-wrap gap-1.5">
             {groups.map((g) => <Link key={g.id} href={`/groups/${g.id}`} className="chip-link">{g.name}</Link>)}
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section variants={STAGGER.item} className="card">
+        <section className="card">
           <h2 className="h-card">My monthly share</h2>
           {mrows.length === 0 && <p className="mt-1 text-sm text-muted">No shares yet.</p>}
           {mrows.map(([k, v]) => (
@@ -81,9 +79,9 @@ export default async function Dashboard() {
               </div>
             </div>
           ))}
-        </motion.section>
+        </section>
 
-        <motion.section variants={STAGGER.item} className="card !p-0">
+        <section className="card !p-0">
           <h2 className="h-sec px-3.5 pb-1 pt-3">Recent expenses</h2>
           {!(ex ?? []).length && <p className="px-3.5 pb-3 text-sm text-muted">Nothing yet.</p>}
           <ul className="divide-y divide-border">
@@ -99,9 +97,9 @@ export default async function Dashboard() {
               </li>
             ))}
           </ul>
-        </motion.section>
+        </section>
 
-        <motion.section variants={STAGGER.item} className="card !p-0">
+        <section className="card !p-0">
           <h2 className="h-sec px-3.5 pb-1 pt-3">Recent payments</h2>
           {!st?.length && <p className="px-3.5 pb-3 text-sm text-muted">None yet.</p>}
           <ul className="divide-y divide-border">
@@ -117,7 +115,7 @@ export default async function Dashboard() {
               </li>
             ))}
           </ul>
-        </motion.section>
+        </section>
       </div>
     </DashboardClient>
   );
