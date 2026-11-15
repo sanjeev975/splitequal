@@ -1,51 +1,33 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-/* DESIGN TOKENS: "Azure Flow" (21st.dev) tuned for WCAG AA contrast. Space-separated RGB so Tailwind opacity (bg-card/80) works. Change colors HERE only; tests/contrast.test.ts guards them. */
+/* DESIGN TOKENS: "Violet & Lime" Fintech-Social System */
 :root {
-  --bg: 246 248 251; --card: 255 255 255; --fg: 31 41 55; --muted: 91 101 119;
-  --primary: 44 114 228; --on: 255 255 255; --accent: 194 65 12; --good: 21 128 61; --danger: 185 28 28;
-  --border: 228 231 236; --inset: 238 242 247; --soft: 223 242 255; --soft-fg: 8 48 160; --ring: 50 128 255;
-  --chart-4: 124 58 237; --chart-5: 180 83 9; --chart-6: 190 24 93; --chart-7: 15 118 110; --chart-8: 91 101 119;
+  /* Core Palette: Deep Violet base, Electric Purple primary, Lime accent */
+  --bg: 250 245 255; --card: 255 255 255; --fg: 46 16 101; --muted: 107 114 128;
+  --primary: 124 58 237; --on: 255 255 255; --accent: 190 242 100; --good: 34 197 94; --danger: 239 68 68;
+  --border: 221 214 254; --inset: 245 243 255; --soft: 237 233 254; --soft-fg: 91 33 182; --ring: 124 58 237;
+  --chart-4: 124 58 237; --chart-5: 190 242 100; --chart-6: 232 121 249; --chart-7: 34 211 238; --chart-8: 107 114 128;
   color-scheme: light;
 }
+
 :root[data-theme="dark"] {
-  --bg: 23 23 23; --card: 38 38 38; --fg: 229 229 229; --muted: 163 163 163;
-  --primary: 91 164 255; --on: 11 18 32; --accent: 251 146 60; --good: 74 222 128; --danger: 248 113 113;
-  --border: 64 64 64; --inset: 31 31 31; --soft: 30 58 100; --soft-fg: 190 219 255; --ring: 91 164 255;
-  --chart-4: 167 139 250; --chart-5: 251 191 36; --chart-6: 244 114 182; --chart-7: 45 212 191; --chart-8: 163 163 163;
+  --bg: 17 24 39; --card: 31 41 55; --fg: 243 244 246; --muted: 156 163 175;
+  --primary: 167 139 250; --on: 17 24 39; --accent: 163 230 53; --good: 74 222 128; --danger: 248 113 113;
+  --border: 71 85 105; --inset: 17 24 39; --soft: 49 46 129; --soft-fg: 221 214 254; --ring: 167 139 250;
+  --chart-4: 167 139 250; --chart-5: 163 230 53; --chart-6: 232 179 249; --chart-7: 34 211 238; --chart-8: 156 163 175;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: 23 23 23; --card: 38 38 38; --fg: 229 229 229; --muted: 163 163 163;
-    --primary: 91 164 255; --on: 11 18 32; --accent: 251 146 60; --good: 74 222 128; --danger: 248 113 113;
-    --border: 64 64 64; --inset: 31 31 31; --soft: 30 58 100; --soft-fg: 190 219 255; --ring: 91 164 255;
-    --chart-4: 167 139 250; --chart-5: 251 191 36; --chart-6: 244 114 182; --chart-7: 45 212 191; --chart-8: 163 163 163;
-    color-scheme: dark;
-  }
-}
+
 body { @apply bg-bg text-fg antialiased; overflow-x: clip; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
 :focus-visible { outline: 3px solid rgb(var(--ring)); outline-offset: 2px; }
-::selection { background: rgb(var(--primary) / 0.25); }
-@layer base { html { font-size: 15px; } } /* every rem-based size shrinks ~6% */
+::selection { background: rgb(var(--accent) / 0.3); }
+
+@layer base { html { font-size: 15px; } }
+
 @layer components {
   .card { @apply rounded-2xl border border-border bg-card p-3.5 shadow-sm md:p-4; }
-  .receipt { @apply card font-mono border-dashed; }
-  .inset { @apply rounded-xl border border-border bg-inset p-2.5; }
-  .btn { @apply inline-block min-h-[36px] rounded-2xl bg-primary px-4 py-1.5 text-center text-sm font-semibold leading-tight text-on transition hover:brightness-110 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-sm { @apply min-h-[30px] rounded-full px-3 py-1 text-[13px]; }
-  .btn { text-wrap: balance; overflow-wrap: anywhere; max-width: 100%; } /* long labels wrap evenly instead of spilling out */
-  .btn-coral { @apply bg-accent; }
-  .field { @apply min-h-[36px] w-full rounded-xl border border-border bg-card px-3 py-1.5 text-sm text-fg placeholder:text-muted; }
-  .chip { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-border bg-inset px-2 py-0.5 text-xs font-normal text-muted; }
-  .chip-link { @apply inline-flex min-h-[36px] items-center rounded-full border border-border bg-card px-3 text-sm font-medium text-fg hover:border-primary; }
-  .h-card { @apply font-display text-[15px] font-semibold; }
-  .h-sec { @apply text-xs font-semibold uppercase tracking-wide text-muted; }
-  .no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }
-  summary.sum { @apply flex min-h-[36px] cursor-pointer select-none items-center justify-between gap-2 font-semibold; list-style: none; }
-  summary.sum::-webkit-details-marker { display: none; }
-  summary.sum::after { content: ""; flex: none; width: .45rem; height: .45rem; margin-right: .2rem; border-right: 2px solid rgb(var(--muted)); border-bottom: 2px solid rgb(var(--muted)); transform: rotate(45deg); transition: transform .15s; }
-  details[open] > summary.sum::after { transform: rotate(-135deg); }
-  /* Touch screens: keep real tap targets (42-44px) with padding, and 16px inputs so iOS Safari doesn't zoom the page on focus. */
-  @media (pointer: coarse) { .btn { min-height: 42px; } .btn-sm { min-height: 36px; } .field { min-height: 42px; font-size: 16px; } summary.sum { min-height: 44px; } .chip-link { min-height: 40px; } }
+  .receipt { @apply card font-mono border-dashed border-border; }
+  .btn { @apply inline-flex items-center justify-center min-h-[40px] rounded-full bg-primary px-5 py-2 text-center text-sm font-bold leading-none text-on transition hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] disabled:opacity-50; }
+  .btn-lime { @apply bg-accent text-fg font-bold; }
+  .field { @apply min-h-[44px] w-full rounded-2xl border border-border bg-card px-4 py-2 text-sm text-fg placeholder:text-muted focus:border-primary focus:ring-1 focus:ring-primary; }
+  .h-card { @apply font-display text-[15px] font-bold tracking-tight; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
