@@ -24,8 +24,7 @@ export function ExpenseActions({ groupId, members, me, e, personal }: { groupId:
   return (<div className="mt-2 flex flex-wrap gap-2 font-sans">
     <button className="btn btn-sm" onClick={() => setEditing(true)}>Edit</button>
     <button className="btn btn-sm" onClick={dup}>Duplicate</button>
-    <button className="btn btn-sm btn-lime" onClick={() => setSharing(true)}>Share Bill</button>
-    <button className="btn btn-coral btn-sm" onClick={del}>Delete</button>
+    <button className="btn btn-sm btn-coral" onClick={del}>Delete</button>
     {sharing && <ShareBillModal expense={e} groupName="SplitLoL Group" onClose={() => setSharing(false)} />}
     {err && <span role="alert" className="text-danger text-sm">{err}</span>}</div>);
 }
