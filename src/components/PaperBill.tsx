@@ -28,76 +28,71 @@ export function PaperBill({
 
   const handleShare = async () => {
     if (!ref.current) return;
-    const dataUrl = await toPng(ref.current, { cacheBust: true });
+    // Increased scale for better resolution on high-DPI phone screens
+    const dataUrl = await toPng(ref.current, { cacheBust: true, pixelRatio: 2 });
     onShare(dataUrl);
   };
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-6">
       <div
         ref={ref}
-        className="w-[340px] bg-[#fefdfa] p-6 relative shadow-lg font-mono text-gray-800 border-x-4 border-dashed border-[#e5e7eb]"
-        style={{ backgroundImage: "linear-gradient(180deg, transparent 50%, #e5e7eb 50%)", backgroundSize: "100% 10px" }}
+        className="w-[360px] bg-white p-8 relative shadow-2xl font-sans text-gray-900 border border-gray-200"
       >
-        {/* Torn Top Edge */}
-        <div className="absolute -top-2 left-0 right-0 h-4 bg-[#fefdfa]" style={{ clipPath: "polygon(0% 100%, 5% 0%, 10% 100%, 15% 0%, 20% 100%, 25% 0%, 30% 100%, 35% 0%, 40% 100%, 45% 0%, 50% 100%, 55% 0%, 60% 100%, 65% 0%, 70% 100%, 75% 0%, 80% 100%, 85% 0%, 90% 100%, 95% 0%, 100% 100%)" }}></div>
-
-        <div className="text-center mb-4">
-          <div className="font-display font-bold text-xl text-primary">SplitLoL</div>
-          <div className="text-xs text-muted uppercase tracking-wider">{groupName}</div>
+        {/* Receipt Header */}
+        <div className="text-center mb-6">
+          <div className="text-2xl font-extrabold text-indigo-600 tracking-tighter">SplitLoL</div>
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">{groupName}</div>
         </div>
 
-        <div className="border-b border-dashed border-gray-300 pb-3 mb-3 text-center">
-          <p className="text-base font-bold truncate">{title}</p>
-          <p className="text-2xl font-bold font-mono mt-1">{fmt(amountMinor, currency)}</p>
+        {/* Title */}
+        <div className="text-center mb-6 border-b border-gray-200 pb-4">
+          <p className="text-xl font-bold text-gray-800">{title}</p>
         </div>
 
-        {/* Breakdown Section */}
-        <div className="space-y-3 text-xs border-b border-dashed border-gray-300 pb-3 mb-3">
-          {payments && payments.length > 0 && (
-            <div>
-              <p className="font-bold text-muted uppercase tracking-wider mb-1">Paid By</p>
-              {payments.map((p, idx) => (
-                <div key={idx} className="flex justify-between py-0.5">
-                  <span className="truncate pr-2">{getMemberName(p.user_id)}</span>
-                  <span className="font-mono font-semibold">{fmt(Number(p.amount_minor), currency)}</span>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Breakdown */}
+        <div className="space-y-6 text-sm">
+          <div>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-100 pb-1">Paid By</p>
+            {payments.map((p, idx) => (
+              <div key={idx} className="flex justify-between py-1">
+                <span className="font-medium text-gray-700">{getMemberName(p.user_id)}</span>
+                <span className="font-bold">{fmt(Number(p.amount_minor), currency)}</span>
+              </div>
+            ))}
+          </div>
 
-          {splits && splits.length > 0 && (
-            <div>
-              <p className="font-bold text-muted uppercase tracking-wider mb-1">Split / Owes</p>
-              {splits.map((s, idx) => (
-                <div key={idx} className="flex justify-between py-0.5">
-                  <span className="truncate pr-2">{getMemberName(s.user_id)}</span>
-                  <span className="font-mono font-semibold">{fmt(Number(s.amount_minor), currency)}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <div>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-100 pb-1">Split / Owes</p>
+            {splits.map((s, idx) => (
+              <div key={idx} className="flex justify-between py-1">
+                <span className="font-medium text-gray-700">{getMemberName(s.user_id)}</span>
+                <span className="font-bold">{fmt(Number(s.amount_minor), currency)}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="text-center py-2">
-          <p className="italic text-xs text-gray-600">"Bhai pesa hi pesa! 💸😂❤️"</p>
+        {/* Total */}
+        <div className="mt-8 pt-4 border-t-2 border-gray-900 flex justify-between items-center">
+          <span className="font-black text-lg">TOTAL</span>
+          <span className="text-2xl font-black">{fmt(amountMinor, currency)}</span>
         </div>
 
-        <div className="text-center my-3">
-          <div className={`inline-block px-3 py-0.5 border-2 text-xs font-bold transform -rotate-3 ${status === "SETTLED" ? "border-green-600 text-green-600" : "border-red-600 text-red-600"}`}>
+        {/* Status Stamp */}
+        <div className="mt-8 flex justify-center">
+          <div className={`px-6 py-1.5 border-4 border-double font-black text-lg uppercase tracking-widest transform -rotate-3 ${status === "SETTLED" ? "border-green-600 text-green-600" : "border-red-600 text-red-600"}`}>
             {status}
           </div>
         </div>
 
-        <div className="text-[10px] text-center text-gray-400 mt-4">
+        {/* Footer */}
+        <div className="text-[10px] text-center text-gray-400 mt-10 uppercase tracking-widest">
           {new Date().toLocaleDateString()} · Settle up on SplitLoL
         </div>
-
-        {/* Torn Bottom Edge */}
-        <div className="absolute -bottom-2 left-0 right-0 h-4 bg-[#fefdfa]" style={{ clipPath: "polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%)" }}></div>
       </div>
 
-      <button onClick={handleShare} className="btn btn-lime">Share Receipt</button>
+      <button onClick={handleShare} className="btn btn-lime w-[320px]">Share Receipt</button>
     </div>
   );
 }
