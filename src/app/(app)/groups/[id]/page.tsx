@@ -51,7 +51,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
         {Object.values(p.net).every((v) => v === 0) && <p className="text-sm text-muted">All settled.</p>}</div>))}
           </section>)}
     <div id="add-expense" className="scroll-mt-20"><AddExpense personal={isPersonal} groupId={id} currency={g.base_currency} members={members} me={user.id} /></div>
-    <ExpenseList personal={isPersonal} groupId={id} expenses={ex ?? []} members={members} me={user.id} isAdmin={isAdmin} />
+    <ExpenseList personal={isPersonal} groupId={id} groupName={g.name} expenses={ex ?? []} members={members} me={user.id} isAdmin={isAdmin} />
     {!isPersonal && <SettlementHistory settlements={st ?? []} members={members} me={user.id} isAdmin={isAdmin} />}
     {!isPersonal && <GroupAdmin groupId={id} name={g.name} archived={!!g.archived_at} me={user.id} isAdmin={isAdmin} isOwner={isOwner} roster={roster} invites={(inv ?? []) as any} />}
     <details className="card"><summary className="sum"><span className="h-card">Activity</span></summary>{!act?.length && <p className="mt-2 text-sm text-muted">Nothing yet.</p>}<ul className="mt-2 space-y-1 text-xs text-muted">{act?.map((a: any) => <li key={a.id}>{new Date(a.created_at).toLocaleString()} · {a.actor ? name(a.actor) : "Someone"} · {a.action.replace(".", " ")}{a.detail?.title ? ` “${a.detail.title}”` : ""}{a.detail?.amount != null ? ` (${fmt(Number(a.detail.amount), a.detail.currency)})` : ""}</li>)}</ul></details>
