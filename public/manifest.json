@@ -9,6 +9,12 @@
   "orientation": "portrait",
   "background_color": "#fbfbff",
   "theme_color": "#7c3aed",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://splitequal.app/manifest.json"
+    }
+  ],
   "lang": "en",
   "categories": [
     "finance",

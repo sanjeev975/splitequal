@@ -1,27 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
-type BIP = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
-export function InstallButton() {
-  const [evt, setEvt] = useState<BIP | null>(null); const [ios, setIos] = useState(false); const [hint, setHint] = useState(false); const [installed, setInstalled] = useState(false); const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    // A more reliable way to detect standalone mode on mobile
-    const checkStandalone = () => {
-      return window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
-    };
 
-    if (checkStandalone()) {
+type BIP = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
+
+export function InstallButton() {
+  const [evt, setEvt] = useState<BIP | null>(null);
+  const [installed, setInstalled] = useState(false);
+  const [ios, setIos] = useState(false);
+  const [hint, setHint] = useState(false);
+
+  useEffect(() => {
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
+    const isStored = localStorage.getItem("pwa-installed") === "1";
+    if (isStandalone || isStored) {
       setInstalled(true);
       return;
     }
 
     const ua = navigator.userAgent.toLowerCase();
     const isIos = /iphone|ipad|ipod/.test(ua);
-    const isAndroid = /android/.test(ua);
-    const isMobileDevice = isIos || isAndroid || /mobile/.test(ua);
-
     setIos(isIos);
-    setIsMobile(isMobileDevice);
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
@@ -30,14 +29,10 @@ export function InstallButton() {
 
     const onInstalled = () => {
       setInstalled(true);
-      setEvt(null);
+      localStorage.setItem("pwa-installed", "1");
     };
 
     window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", onInstalled);
-
-    // Also re-check standalone state if the window resizes or focus changes,
-    // as some browsers update the mode dynamically
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
@@ -46,9 +41,9 @@ export function InstallButton() {
     };
   }, []);
 
-  // Show if: (Not installed) AND (Native prompt exists OR we are on mobile)
+  // Show if: (Not installed) AND (Native prompt exists OR on iOS)
   if (installed) return null;
-  if (!isMobile && !evt) return null;
+  if (!evt && !ios) return null;
 
   return (
     <>
@@ -56,7 +51,8 @@ export function InstallButton() {
         if (evt) {
           try {
             await evt.prompt();
-            await evt.userChoice;
+            const choice = await evt.userChoice;
+            if (choice.outcome === 'accepted') setInstalled(true);
             setEvt(null);
           } catch {
             setHint(!hint);

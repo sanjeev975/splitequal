@@ -3,7 +3,7 @@
 //   so no financial data is stored offline and nothing stale or private survives sign-out.
 // - Navigations are network-first with a branded offline fallback.
 // Bump V to force old caches to be deleted on the next deploy.
-const V = "splitlol-v2"; // bumped: changing this deletes every older cache on activation (clears the stale-code problem)
+const V = "splitlol-v3"; // bumped cache version
 // Only cache files whose NAME contains a content hash (production builds). Dev files like page.js keep the same name while their content changes, so caching them served stale code.
 const HASHED = /[-./][0-9a-f]{8,}\.(js|css|woff2?|png|jpe?g|svg|webp)$/i;
 const PRECACHE = ["/offline.html", "/icons/icon-192.png", "/icons/icon-512.png"];
