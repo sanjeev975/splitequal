@@ -37,7 +37,7 @@ export function InstallButton() {
         <div role="status" className="card fixed bottom-20 left-4 right-4 z-50 text-sm space-y-2 max-w-sm mx-auto">
           <p className="font-semibold">How to install SplitLoL:</p>
           {ios ? (
-            <p>Tap the <b>Share</b> button in Safari, then select <b>“Add to Home Screen”</b>.</p>
+            <p>To install, open this page in <b>Safari</b>, tap the <b>Share</b> button, then select <b>“Add to Home Screen”</b>.</p>
           ) : (
             <p>Tap your browser menu (three dots <b>⋮</b>), then select <b>“Install app”</b> or <b>“Add to Home screen”</b>.</p>
           )}
