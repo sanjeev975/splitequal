@@ -1,6 +1,13 @@
+"use client";
+"use client";
+import { useState } from "react";
+import { FeedbackModal } from "./FeedbackModal";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { LEGAL, hasPlaceholders } from "@/lib/legal";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+
 export type Section = [string, ...(string | string[])[]]; // [heading, paragraph | bullet list, ...]
 export function LegalPage({ title, sections }: { title: string; sections: Section[] }) {
   return (<main className="mx-auto max-w-2xl space-y-4 px-4 py-6"><Link href="/"><Logo /></Link>
@@ -11,5 +18,19 @@ export function LegalPage({ title, sections }: { title: string; sections: Sectio
     <p className="text-sm"><Link className="underline" href="/privacy">Privacy Policy</Link> · <Link className="underline" href="/terms">Terms of Service</Link> · <Link className="underline" href="/">Home</Link></p></main>);
 }
 export function LegalFooter() {
-  return <footer className="py-6 text-center text-sm opacity-80"><Link className="underline" href="/privacy">Privacy</Link> · <Link className="underline" href="/terms">Terms</Link> · {LEGAL.email}</footer>;
+  const [show, setShow] = useState(false);
+  const router = useRouter();
+  async function openFeedback() {
+    const { data: { user } } = await supabaseBrowser().auth.getUser();
+    if (!user) { router.push("/login"); return; }
+    setShow(true);
+  }
+  return (
+    <>
+      <footer className="py-6 text-center text-sm opacity-80">
+        <Link className="underline" href="/privacy">Privacy</Link> · <Link className="underline" href="/terms">Terms</Link> · <button className="underline" onClick={openFeedback}>Feedback</button> · {LEGAL.email}
+      </footer>
+      {show && <FeedbackModal onClose={() => setShow(false)} />}
+    </>
+  );
 }

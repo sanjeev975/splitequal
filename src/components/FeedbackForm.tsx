@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
-export function FeedbackForm() {
+export function FeedbackForm({ onSuccess }: { onSuccess?: () => void }) {
   const [message, setMessage] = useState("");
   const [category, setCategory] = useState("feature");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -19,6 +19,7 @@ export function FeedbackForm() {
     } else {
       setMessage("");
       setStatus("success");
+      if (onSuccess) setTimeout(onSuccess, 1000);
     }
   }
 
