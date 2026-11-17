@@ -10,7 +10,9 @@ export function FeedbackForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("submitting");
-    const { error } = await supabaseBrowser().from("feedback").insert({ message, category });
+    const { data: { user } } = await supabaseBrowser().auth.getUser();
+    if (!user) { setStatus("error"); return; }
+    const { error } = await supabaseBrowser().from("feedback").insert({ message, category, user_id: user.id });
     if (error) {
       console.error(error);
       setStatus("error");
