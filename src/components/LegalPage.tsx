@@ -1,5 +1,4 @@
 "use client";
-"use client";
 import { useState } from "react";
 import { FeedbackModal } from "./FeedbackModal";
 import Link from "next/link";
