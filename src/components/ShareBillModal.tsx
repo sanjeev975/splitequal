@@ -19,7 +19,7 @@ export function ShareBillModal({
     if (dialog.current && !dialog.current.open) dialog.current.showModal();
   }, []);
 
-  const getMemberName = (userId: string) => members.find((m) => m.user_id === userId)?.name ?? "Member";
+  const getMemberName = (userId: string) => members.find((m) => m.user_id === userId)?.name ?? "Former member";
 
   return (
     <dialog ref={dialog} className="modal" onClose={onClose}>

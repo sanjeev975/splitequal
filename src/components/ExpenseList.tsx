@@ -41,6 +41,6 @@ export function ExpenseList({ groupId, groupName, expenses, members, me, isAdmin
             <button type="button" className="btn btn-sm btn-lime" onClick={() => setSharingId(e.id)}>Share Bill</button>
           </div>
           {mine && <ExpenseActions groupId={groupId} members={members} me={me} e={e} personal={personal} />}
-          {sharingId === e.id && <ShareBillModal expense={e} groupName={groupName ?? "SplitLoL Group"} onClose={() => setSharingId(null)} />}
+          {sharingId === e.id && <ShareBillModal expense={e} groupName={groupName ?? "SplitLoL Group"} members={members} onClose={() => setSharingId(null)} />}
         </div></details>); })}</section>);
 }
