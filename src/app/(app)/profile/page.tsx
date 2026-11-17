@@ -6,6 +6,7 @@ import { AvatarPicker } from "@/components/AvatarPicker";
 import { SignOut } from "@/components/SignOut";
 import { ThemeSetting } from "@/components/ThemeSetting";
 import { AccountData } from "@/components/AccountData";
+import { PasswordChange } from "@/components/PasswordChange";
 const CUR = ["INR", "USD", "GBP", "EUR", "AED", "CAD", "AUD"];
 export default function Profile() {
   const sb = supabaseBrowser(); const [uid, setUid] = useState(""); const [email, setEmail] = useState(""); const [f, setF] = useState({ display_name: "", username: "", default_currency: "INR", time_zone: "Asia/Kolkata" }); const [msg, setMsg] = useState("");
@@ -23,5 +24,5 @@ export default function Profile() {
     <label className="block text-sm">Username<input className="field" required value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></label>
     <label className="block text-sm">Default currency<select className="field" value={f.default_currency} onChange={(e) => setF({ ...f, default_currency: e.target.value })}>{CUR.map((c) => <option key={c}>{c}</option>)}</select></label>
     <label className="block text-sm">Time zone<select className="field" value={f.time_zone} onChange={(e) => setF({ ...f, time_zone: e.target.value })}>{zones.map((z) => <option key={z}>{z}</option>)}</select></label>
-    <button className="btn">Save</button>{msg && <p role="status" className="text-sm">{msg}</p>}</form><PaymentHandles /><AccountData /><section className="card max-w-md space-y-2"><h2 className="h-card">Session</h2><SignOut /></section></div>);
+    <button className="btn">Save</button>{msg && <p role="status" className="text-sm">{msg}</p>}</form><PaymentHandles /><PasswordChange /><AccountData /><section className="card max-w-md space-y-2"><h2 className="h-card">Session</h2><SignOut /></section></div>);
 }
