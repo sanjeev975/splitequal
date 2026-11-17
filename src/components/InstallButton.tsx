@@ -1,35 +1,36 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
+import { isIOS, isStandalone } from "@/lib/pwa-utils";
 
 type BIP = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
 export function InstallButton() {
   const [evt, setEvt] = useState<BIP | null>(null);
-  const [installed, setInstalled] = useState(false);
-  const [ios, setIos] = useState(false);
-  const [hint, setHint] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
 
   useEffect(() => {
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
-    const isStored = localStorage.getItem("pwa-installed") === "1";
-    if (isStandalone || isStored) {
-      setInstalled(true);
+    // Hide if already standalone (iOS or Android)
+    if (isStandalone()) {
+      setCanInstall(false);
       return;
     }
 
-    const ua = navigator.userAgent.toLowerCase();
-    const isIos = /iphone|ipad|ipod/.test(ua);
-    setIos(isIos);
+    // Hide on iOS (handled by IOSInstallBanner)
+    if (isIOS()) {
+      setCanInstall(false);
+      return;
+    }
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setEvt(e as BIP);
+      setCanInstall(true);
     };
 
     const onInstalled = () => {
-      setInstalled(true);
-      localStorage.setItem("pwa-installed", "1");
+      setCanInstall(false);
+      try { localStorage.setItem("pwa-installed", "1"); } catch {}
     };
 
     window.addEventListener("beforeinstallprompt", onPrompt);
@@ -41,39 +42,23 @@ export function InstallButton() {
     };
   }, []);
 
-  // Show if: (Not installed) AND (Native prompt exists OR on iOS)
-  if (installed) return null;
-  if (!evt && !ios) return null;
+  if (!canInstall || !evt) return null;
 
   return (
-    <>
-      <button className="btn btn-sm !rounded-full !px-3" onClick={async () => {
-        if (evt) {
-          try {
-            await evt.prompt();
-            const choice = await evt.userChoice;
-            if (choice.outcome === 'accepted') setInstalled(true);
-            setEvt(null);
-          } catch {
-            setHint(!hint);
-          }
-        } else {
-          setHint(!hint);
+    <button
+      className="btn btn-sm !rounded-full !px-3"
+      onClick={async () => {
+        if (!evt) return;
+        await evt.prompt();
+        const choice = await evt.userChoice;
+        if (choice.outcome === "accepted") {
+          setCanInstall(false);
+          try { localStorage.setItem("pwa-installed", "1"); } catch {}
         }
-      }}>
-        <Download size={14} className="mr-1" />Install
-      </button>
-      {hint && (
-        <div role="status" className="card fixed bottom-20 left-4 right-4 z-50 text-sm space-y-2 max-w-sm mx-auto">
-          <p className="font-semibold">How to install SplitLoL:</p>
-          {ios ? (
-            <p>To install, open this page in <b>Safari</b>, tap the <b>Share</b> button, then select <b>“Add to Home Screen”</b>.</p>
-          ) : (
-            <p>Tap your browser menu (three dots <b>⋮</b>), then select <b>“Install app”</b> or <b>“Add to Home screen”</b>.</p>
-          )}
-          <button onClick={() => setHint(false)} className="text-xs underline text-muted block pt-1">Got it</button>
-        </div>
-      )}
-    </>
+        setEvt(null);
+      }}
+    >
+      <Download size={14} className="mr-1" />Install
+    </button>
   );
 }
