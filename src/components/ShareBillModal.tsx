@@ -5,17 +5,21 @@ import { PaperBill } from "./PaperBill";
 export function ShareBillModal({
   expense,
   groupName,
+  members = [],
   onClose
 }: {
   expense: any;
   groupName: string;
-  onClose: () => void
+  members?: { user_id: string; name: string }[];
+  onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (dialog.current && !dialog.current.open) dialog.current.showModal();
   }, []);
+
+  const getMemberName = (userId: string) => members.find((m) => m.user_id === userId)?.name ?? "Member";
 
   return (
     <dialog ref={dialog} className="modal" onClose={onClose}>
@@ -25,9 +29,12 @@ export function ShareBillModal({
         <PaperBill
           groupName={groupName}
           title={expense.title}
-          amount={Number(expense.amount_minor)}
+          amountMinor={Number(expense.amount_minor)}
           currency={expense.currency}
-          status="PENDING" // Simplified for now
+          payments={expense.expense_payments ?? []}
+          splits={expense.expense_splits ?? []}
+          getMemberName={getMemberName}
+          status="PENDING"
           onShare={async (dataUrl) => {
             try {
               const res = await fetch(dataUrl);

@@ -15,7 +15,6 @@ export default function BillDemo() {
           text: "Check out this bill!",
         });
       } else {
-        // Fallback for browsers that don't support file sharing
         const link = document.createElement("a");
         link.href = dataUrl;
         link.download = "bill.png";
@@ -31,8 +30,11 @@ export default function BillDemo() {
       <PaperBill
         groupName="Italy 🇮🇹"
         title="Dinner at Roma"
-        amount={1250}
-        currency="₹"
+        amountMinor={125000}
+        currency="INR"
+        payments={[{ user_id: "u1", amount_minor: 125000 }]}
+        splits={[{ user_id: "u1", amount_minor: 62500 }, { user_id: "u2", amount_minor: 62500 }]}
+        getMemberName={(id) => id === "u1" ? "Aman" : "Rahul"}
         status="PENDING"
         onShare={share}
       />
