@@ -5,9 +5,15 @@ type BIP = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome:
 export function InstallButton() {
   const [evt, setEvt] = useState<BIP | null>(null); const [ios, setIos] = useState(false); const [hint, setHint] = useState(false); const [installed, setInstalled] = useState(false); const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    // Check if it's already installed (the logic we had)
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
-    if (isStandalone) { setInstalled(true); return; }
+    // A more reliable way to detect standalone mode on mobile
+    const checkStandalone = () => {
+      return window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
+    };
+
+    if (checkStandalone()) {
+      setInstalled(true);
+      return;
+    }
 
     const ua = navigator.userAgent.toLowerCase();
     const isIos = /iphone|ipad|ipod/.test(ua);
@@ -17,10 +23,21 @@ export function InstallButton() {
     setIos(isIos);
     setIsMobile(isMobileDevice);
 
-    const onPrompt = (e: Event) => { e.preventDefault(); setEvt(e as BIP); };
-    const onInstalled = () => { setInstalled(true); setEvt(null); };
+    const onPrompt = (e: Event) => {
+      e.preventDefault();
+      setEvt(e as BIP);
+    };
+
+    const onInstalled = () => {
+      setInstalled(true);
+      setEvt(null);
+    };
 
     window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+
+    // Also re-check standalone state if the window resizes or focus changes,
+    // as some browsers update the mode dynamically
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
