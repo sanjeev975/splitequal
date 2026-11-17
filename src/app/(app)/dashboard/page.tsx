@@ -58,9 +58,9 @@ export default async function Dashboard() {
         {(ex ?? []).length === 0 && <p className="card text-sm">No expenses yet. Tap Add to record your first one.</p>}
 
         {Object.entries(tot).filter(([, t]) => t.owe > 0 || t.owed > 0).map(([cur, t]) => (
-          <section key={cur} aria-label={`${cur} summary`} className="no-scrollbar -mx-4 flex snap-x gap-2 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+          <section key={cur} aria-label={`${cur} summary`} className="flex justify-center gap-2 md:gap-4">
             {[["You owe", fmt(t.owe, cur), "text-danger"], ["You are owed", fmt(t.owed, cur), "text-good"], ["Net", `${t.owed - t.owe < 0 ? "−" : ""}${fmt(Math.abs(t.owed - t.owe), cur)}`, ""]].map(([l, v, c]) => (
-              <div key={l} className="inset min-w-[8.5rem] flex-1 snap-start"><p className="text-xs text-muted">{l} <span className="chip !px-1.5 !py-0">{cur}</span></p><p className={`font-mono text-lg font-bold ${c}`}>{v}</p></div>
+              <div key={l} className="inset min-w-[7rem] md:min-w-[8.5rem] flex flex-col items-center justify-center p-3 text-center"><p className="text-xs text-muted mb-1">{l} <span className="chip !px-1.5 !py-0">{cur}</span></p><p className={`font-mono text-lg font-bold ${c}`}>{v}</p></div>
             ))}
           </section>
         ))}
