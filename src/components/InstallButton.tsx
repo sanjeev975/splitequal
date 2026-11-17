@@ -5,14 +5,31 @@ type BIP = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome:
 export function InstallButton() {
   const [evt, setEvt] = useState<BIP | null>(null); const [ios, setIos] = useState(false); const [hint, setHint] = useState(false); const [installed, setInstalled] = useState(false); const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    if (window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone) { setInstalled(true); return; }
-    const ua = navigator.userAgent;
-    setIos(/iphone|ipad|ipod/i.test(ua));
-    setIsMobile(/android|iphone|ipad|ipod|mobile/i.test(ua));
-    const onPrompt = (e: Event) => { e.preventDefault(); setEvt(e as BIP); }; const onInstalled = () => { setInstalled(true); setEvt(null); };
-    window.addEventListener("beforeinstallprompt", onPrompt); window.addEventListener("appinstalled", onInstalled);
-    return () => { window.removeEventListener("beforeinstallprompt", onPrompt); window.removeEventListener("appinstalled", onInstalled); };
+    // Check if it's already installed (the logic we had)
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
+    if (isStandalone) { setInstalled(true); return; }
+
+    const ua = navigator.userAgent.toLowerCase();
+    const isIos = /iphone|ipad|ipod/.test(ua);
+    const isAndroid = /android/.test(ua);
+    const isMobileDevice = isIos || isAndroid || /mobile/.test(ua);
+
+    setIos(isIos);
+    setIsMobile(isMobileDevice);
+
+    const onPrompt = (e: Event) => { e.preventDefault(); setEvt(e as BIP); };
+    const onInstalled = () => { setInstalled(true); setEvt(null); };
+
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
   }, []);
+
+  // Show if: (Not installed) AND (Native prompt exists OR we are on mobile)
   if (installed) return null;
   if (!isMobile && !evt) return null;
 
