@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: 1.145.4 }
       - run: test -f supabase/config.toml || supabase init
       - run: supabase start # applies every file in supabase/migrations in order; a SQL error fails the job
       - name: Run RLS / business-rule tests
