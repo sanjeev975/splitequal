@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { AddExpense } from "./GroupClient";
+import { ShareBillModal } from "./ShareBillModal";
 export function ExpenseActions({ groupId, members, me, e, personal }: { groupId: string; members: { user_id: string; name: string }[]; me: string; e: any; personal?: boolean }) {
-  const r = useRouter(); const [editing, setEditing] = useState(false); const [err, setErr] = useState(""); const sb = supabaseBrowser();
+  const r = useRouter(); const [editing, setEditing] = useState(false); const [sharing, setSharing] = useState(false); const [err, setErr] = useState(""); const sb = supabaseBrowser();
   const done = (error: { message: string } | null) => (error ? setErr(error.message) : r.refresh());
   const pay = e.expense_payments.map((p: any) => ({ user_id: p.user_id, amount: Number(p.amount_minor) }));
   const spl = e.expense_splits.map((p: any) => ({ user_id: p.user_id, amount: Number(p.amount_minor) }));
@@ -23,6 +24,8 @@ export function ExpenseActions({ groupId, members, me, e, personal }: { groupId:
   return (<div className="mt-2 flex flex-wrap gap-2 font-sans">
     <button className="btn btn-sm" onClick={() => setEditing(true)}>Edit</button>
     <button className="btn btn-sm" onClick={dup}>Duplicate</button>
+    <button className="btn btn-sm btn-lime" onClick={() => setSharing(true)}>Share Bill</button>
     <button className="btn btn-coral btn-sm" onClick={del}>Delete</button>
+    {sharing && <ShareBillModal expense={e} groupName="SplitLoL Group" onClose={() => setSharing(false)} />}
     {err && <span role="alert" className="text-danger text-sm">{err}</span>}</div>);
 }
