@@ -46,10 +46,12 @@ export function Avatar({ path, name, size = 36 }: { path?: string | null; name: 
 
   const initial = <span aria-hidden className="inline-grid shrink-0 place-items-center rounded-full bg-primary font-bold text-on" style={{ ...box, fontSize: size * 0.42 }}>{(name.trim()[0] ?? "?").toUpperCase()}</span>;
 
+  // We show the image if we have a URL, otherwise the initial.
+  // To avoid the flash of the initial state, we don't render the initial if we know we are loading a real image.
   return (
     <span className="relative inline-grid shrink-0 rounded-full overflow-hidden" style={box}>
-      {initial}
-      {url ? (
+      {!url && initial}
+      {url && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={url}
@@ -60,7 +62,7 @@ export function Avatar({ path, name, size = 36 }: { path?: string | null; name: 
           onLoad={() => setLoading(false)}
           onError={() => setLoading(false)}
         />
-      ) : null}
+      )}
     </span>
   );
 }
